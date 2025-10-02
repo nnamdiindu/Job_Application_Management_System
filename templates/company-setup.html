@@ -123,25 +123,30 @@
         <h1 class="profile-title">Complete Your Profile</h1>
         <p class="profile-subtitle">Set up your company profile</p>
         
-        <form>
+        <form action="{{ url_for('company_register') }}" method="post">
             <div class="mb-3">
                 <label for="yourName" class="form-label">Your Name</label>
-                <input type="text" class="form-control" id="yourName">
+                <input type="text" class="form-control" id="yourName" name="full-name">
             </div>
             
             <div class="mb-3">
                 <label for="companyName" class="form-label">Company Name</label>
-                <input type="text" class="form-control" id="companyName">
+                <input type="text" class="form-control" id="companyName" name="company-name">
+            </div>
+
+            <div class="mb-3">
+                <label for="companyEmail" class="form-label">Email</label>
+                <input type="email" class="form-control" id="companyEmail" name="company-email">
             </div>
             
             <div class="mb-3">
                 <label for="location" class="form-label">Location</label>
-                <input type="text" class="form-control" id="location" placeholder="e.g., San Francisco, CA">
+                <input type="text" class="form-control" id="location" placeholder="e.g., San Francisco, CA" name="location">
             </div>
             
             <div class="mb-3">
                 <label for="bio" class="form-label">Bio</label>
-                <textarea class="form-control" id="bio" placeholder="About your company..."></textarea>
+                <textarea class="form-control" id="bio" name="bio" placeholder="About your company..."></textarea>
             </div>
             
             <button type="submit" class="btn btn-continue">Continue</button>
