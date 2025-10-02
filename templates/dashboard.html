@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobMatch AI - Smart Job Application Management</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/index.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-brain me-2"></i>JobMatch AI
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#jobs">Find Jobs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#applications">My Applications</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#profile">Profile</a>
+                    </li>
+                </ul>
+                <div class="dropdown ms-3">
+                    <a class="btn btn-outline-primary rounded-pill dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle me-1"></i> John Doe
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-4">
+        <!-- Dashboard Stats -->
+        <div class="row mb-4" id="dashboard">
+            <div class="col-md-3 mb-3">
+                <div class="card stats-card text-white h-100">
+                    <div class="card-body position-relative">
+                        <h6 class="card-subtitle mb-2 opacity-75">Applications</h6>
+                        <h2 class="card-title mb-0">24</h2>
+                        <small class="opacity-75">+3 this week</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">Interviews</h6>
+                        <h2 class="card-title mb-0 text-warning">5</h2>
+                        <small class="text-muted">2 upcoming</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">AI Match Score</h6>
+                        <h2 class="card-title mb-0 text-success">87%</h2>
+                        <small class="text-muted">Excellent profile</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">Response Rate</h6>
+                        <h2 class="card-title mb-0 text-info">32%</h2>
+                        <small class="text-muted">Above average</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-3">
+                <div class="sidebar">
+                    <!-- AI Recommendations -->
+                    <div class="ai-recommendation mb-4">
+                        <h6 class="fw-bold mb-2 mt-2">AI Insights</h6>
+                        <p class="small mb-2">Based on your profile, you have a <strong>high match</strong> for Senior Frontend Developer roles.</p>
+                        <button class="btn btn-ai btn-sm">View Recommendations</button>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-3">Filters</h6>
+                        <div class="mb-3">
+                            <label class="form-label small">Job Type</label>
+                            <div>
+                                <span class="filter-chip active">Full-time</span>
+                                <span class="filter-chip">Part-time</span>
+                                <span class="filter-chip">Contract</span>
+                                <span class="filter-chip">Remote</span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small">Experience Level</label>
+                            <div>
+                                <span class="filter-chip">Entry</span>
+                                <span class="filter-chip active">Mid</span>
+                                <span class="filter-chip">Senior</span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small">Salary Range</label>
+                            <select class="form-select form-select-sm">
+                                <option>Any</option>
+                                <option>$50k - $75k</option>
+                                <option selected>$75k - $100k</option>
+                                <option>$100k+</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div>
+                        <h6 class="fw-bold mb-3">Quick Actions</h6>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-upload me-1"></i> Upload Resume
+                            </button>
+                            <button class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-edit me-1"></i> Update Profile
+                            </button>
+                            <button class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-chart-line me-1"></i> View Analytics
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="col-lg-9">
+                <!-- Tab Navigation -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <ul class="nav nav-pills nav-fill" id="mainTabs" role="tablist">
+                            <li class="nav-item">
+                                <button class="nav-link active" id="jobs-tab" data-bs-toggle="pill" data-bs-target="#jobs-pane" type="button">
+                                    <i class="fas fa-search me-1"></i> Recommended Jobs
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" id="applications-tab" data-bs-toggle="pill" data-bs-target="#applications-pane" type="button">
+                                    <i class="fas fa-file-alt me-1"></i> My Applications
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link" id="interviews-tab" data-bs-toggle="pill" data-bs-target="#interviews-pane" type="button">
+                                    <i class="fas fa-calendar me-1"></i> Interviews
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="mainTabContent">
+                    <!-- Recommended Jobs Tab -->
+                    <div class="tab-pane fade show active" id="jobs-pane">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">AI-Recommended Jobs for You</h5>
+                            <button class="btn btn-ai">
+                                <i class="fas fa-magic me-1"></i> Refresh AI Suggestions
+                            </button>
+                        </div>
+
+                        <!-- Job Cards -->
+                        <div class="row" id="jobsList">
+                            <!-- Job 1 -->
+                            <div class="col-12 mb-3">
+                                <div class="card job-card">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <div class="company-logo">TC</div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div>
+                                                        <h6 class="mb-1">Senior Frontend Developer</h6>
+                                                        <p class="text-muted mb-1">TechCorp Inc. • San Francisco, CA</p>
+                                                        <p class="small mb-2">$90k - $120k • Full-time • Remote friendly</p>
+                                                        <div class="mb-2">
+                                                            <span class="badge bg-light text-dark me-1">React</span>
+                                                            <span class="badge bg-light text-dark me-1">TypeScript</span>
+                                                            <span class="badge bg-light text-dark me-1">Node.js</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-end">
+                                                        <span class="match-score match-high">
+                                                            <i class="fas fa-star me-1"></i>92% Match
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-clock me-1"></i>Posted 2 days ago
+                                                    </small>
+                                                    <div>
+                                                        <button class="btn btn-sm btn-outline-primary me-2">
+                                                            <i class="fas fa-heart me-1"></i>Save
+                                                        </button>
+                                                        <button class="btn btn-sm btn-primary">
+                                                            <i class="fas fa-paper-plane me-1"></i>Apply Now
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Job 2 -->
+                            <div class="col-12 mb-3">
+                                <div class="card job-card">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <div class="company-logo">DS</div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div>
+                                                        <h6 class="mb-1">Full Stack Developer</h6>
+                                                        <p class="text-muted mb-1">DataSoft Solutions • New York, NY</p>
+                                                        <p class="small mb-2">$85k - $110k • Full-time • Hybrid</p>
+                                                        <div class="mb-2">
+                                                            <span class="badge bg-light text-dark me-1">React</span>
+                                                            <span class="badge bg-light text-dark me-1">Python</span>
+                                                            <span class="badge bg-light text-dark me-1">AWS</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-end">
+                                                        <span class="match-score match-medium">
+                                                            <i class="fas fa-star me-1"></i>78% Match
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-clock me-1"></i>Posted 5 days ago
+                                                    </small>
+                                                    <div>
+                                                        <button class="btn btn-sm btn-outline-primary me-2">
+                                                            <i class="fas fa-heart me-1"></i>Save
+                                                        </button>
+                                                        <button class="btn btn-sm btn-primary">
+                                                            <i class="fas fa-paper-plane me-1"></i>Apply Now
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Job 3 -->
+                            <div class="col-12 mb-3">
+                                <div class="card job-card">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <div class="company-logo">II</div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div>
+                                                        <h6 class="mb-1">JavaScript Developer</h6>
+                                                        <p class="text-muted mb-1">Innovation Labs • Austin, TX</p>
+                                                        <p class="small mb-2">$70k - $95k • Full-time • Remote</p>
+                                                        <div class="mb-2">
+                                                            <span class="badge bg-light text-dark me-1">JavaScript</span>
+                                                            <span class="badge bg-light text-dark me-1">Vue.js</span>
+                                                            <span class="badge bg-light text-dark me-1">MongoDB</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-end">
+                                                        <span class="match-score match-medium">
+                                                            <i class="fas fa-star me-1"></i>71% Match
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-clock me-1"></i>Posted 1 week ago
+                                                    </small>
+                                                    <div>
+                                                        <button class="btn btn-sm btn-outline-primary me-2">
+                                                            <i class="fas fa-heart me-1"></i>Save
+                                                        </button>
+                                                        <button class="btn btn-sm btn-primary">
+                                                            <i class="fas fa-paper-plane me-1"></i>Apply Now
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- My Applications Tab -->
+                    <div class="tab-pane fade" id="applications-pane">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">My Applications (24)</h5>
+                            <div>
+                                <select class="form-select form-select-sm d-inline-block w-auto me-2">
+                                    <option>All Status</option>
+                                    <option>Applied</option>
+                                    <option>Interview</option>
+                                    <option>Offer</option>
+                                    <option>Rejected</option>
+                                </select>
+                                <button class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-download me-1"></i>Export
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Applications List -->
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <div class="company-logo">TC</div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div>
+                                                        <h6 class="mb-1">Senior Frontend Developer</h6>
+                                                        <p class="text-muted mb-1">TechCorp Inc.</p>
+                                                        <small class="text-muted">Applied on Oct 15, 2024</small>
+                                                    </div>
+                                                    <div class="text-end">
+                                                        <span class="status-badge status-interview">Interview Scheduled</span>
+                                                        <div class="mt-2">
+                                                            <div class="progress progress-custom" style="width: 120px;">
+                                                                <div class="progress-bar" style="width: 60%"></div>
+                                                            </div>
+                                                            <small class="text-muted">60% Complete</small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                                    <div>
+                                                        <small class="text-muted me-3">
+                                                            <i class="fas fa-calendar me-1"></i>Interview: Oct 25, 2PM
+                                                        </small>
+                                                        <small class="text-muted">
+                                                            <i class="fas fa-user me-1"></i>Sarah Johnson, HR
+                                                        </small>
+                                                    </div>
+                                                    <div>
+                                                        <button class="btn btn-sm btn-outline-primary me-1">
+                                                            <i class="fas fa-eye me-1"></i>View
+                                                        </button>
+                                                        <button class="btn btn-sm btn-primary">
+                                                            <i class="fas fa-comment me-1"></i>Message
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <div class="company-logo">DS</div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div>
+                                                        <h6 class="mb-1">Full Stack Developer</h6>
+                                                        <p class="text-muted mb-1">DataSoft Solutions</p>
+                                                        <small class="text-muted">Applied on Oct 10, 2024</small>
+                                                    </div>
+                                                    <div class="text-end">
+                                                        <span class="status-badge status-applied">Under Review</span>
+                                                        <div class="mt-2">
+                                                            <div class="progress progress-custom" style="width: 120px;">
+                                                                <div class="progress-bar" style="width: 30%"></div>
+                                                            </div>
+                                                            <small class="text-muted">30% Complete</small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-clock me-1"></i>Expected response: 3-5 days
+                                                    </small>
+                                                    <div>
+                                                        <button class="btn btn-sm btn-outline-primary">
+                                                            <i class="fas fa-eye me-1"></i>View Details
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <div class="company-logo">ST</div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div>
+                                                        <h6 class="mb-1">React Developer</h6>
+                                                        <p class="text-muted mb-1">StartupTech</p>
+                                                        <small class="text-muted">Applied on Oct 5, 2024</small>
+                                                    </div>
+                                                    <div class="text-end">
+                                                        <span class="status-badge status-offer">Offer Received</span>
+                                                        <div class="mt-2">
+                                                            <div class="progress progress-custom" style="width: 120px;">
+                                                                <div class="progress-bar bg-success" style="width: 90%"></div>
+                                                            </div>
+                                                            <small class="text-success">90% Complete</small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                                    <small class="text-success fw-bold">
+                                                        <i class="fas fa-dollar-sign me-1"></i>$95,000 Annual Salary
+                                                    </small>
+                                                    <div>
+                                                        <button class="btn btn-sm btn-success me-1">
+                                                            <i class="fas fa-check me-1"></i>Accept
+                                                        </button>
+                                                        <button class="btn btn-sm btn-outline-secondary">
+                                                            <i class="fas fa-times me-1"></i>Decline
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interviews Tab -->
+                    <div class="tab-pane fade" id="interviews-pane">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">Upcoming Interviews</h5>
+                            <button class="btn btn-ai">
+                                <i class="fas fa-robot me-1"></i>AI Interview Prep
+                            </button>
+                        </div>
+
+                        <!-- Interview Cards -->
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <div class="card border-warning">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-3">
+                                            <div>
+                                                <h6 class="mb-1">Technical Interview - Senior Frontend Developer</h6>
+                                                <p class="text-muted mb-1">TechCorp Inc.</p>
+                                                <p class="small mb-0">
+                                                    <i class="fas fa-calendar me-1"></i>October 25, 2024 at 2:00 PM
+                                                    <span class="ms-3"><i class="fas fa-clock me-1"></i>60 minutes</span>
+                                                </p>
+                                            </div>
+                                            <span class="badge bg-warning text-dark">Tomorrow</span>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <h6 class="small fw-bold mb-2">Interview Details:</h6>
+                                            <p class="small mb-1"><strong>Type:</strong> Technical & Behavioral</p>
+                                            <p class="small mb-1"><strong>Format:</strong> Video Call (Zoom)</p>
+                                            <p class="small mb-1"><strong>Interviewer:</strong> Sarah Johnson (HR) & Mike Chen (Tech Lead)</p>
+                                            <p class="small mb-1"><strong>Focus:</strong> React, TypeScript, System Design</p>
+                                        </div>
+
+                                        <div class="ai-recommendation mb-3">
+                                            <h6 class="fw-bold mb-2 mt-2">AI Prep Suggestions</h6>
+                                            <ul class="small mb-2 ps-3">
+                                                <li>Review React Hooks and Context API</li>
+                                                <li>Practice system design for e-commerce platforms</li>
+                                                <li>Prepare STAR method examples for teamwork</li>
+                                            </ul>
+                                        </div>
+
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-sm btn-primary">
+                                                <i class="fas fa-video me-1"></i>Join Meeting
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-calendar-plus me-1"></i>Add to Calendar
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success">
+                                                <i class="fas fa-brain me-1"></i>AI Mock Interview
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-file-alt me-1"></i>View Job Description
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-3">
+                                            <div>
+                                                <h6 class="mb-1">HR Interview - Full Stack Developer</h6>
+                                                <p class="text-muted mb-1">DataSoft Solutions</p>
+                                                <p class="small mb-0">
+                                                    <i class="fas fa-calendar me-1"></i>October 28, 2024 at 10:00 AM
+                                                    <span class="ms-3"><i class="fas fa-clock me-1"></i>45 minutes</span>
+                                                </p>
+                                            </div>
+                                            <span class="badge bg-info">Next Week</span>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <h6 class="small fw-bold mb-2">Interview Details:</h6>
+                                            <p class="small mb-1"><strong>Type:</strong> HR & Culture Fit</p>
+                                            <p class="small mb-1"><strong>Format:</strong> In-person (Office Visit)</p>
+                                            <p class="small mb-1"><strong>Interviewer:</strong> Jennifer Lee (HR Director)</p>
+                                            <p class="small mb-1"><strong>Address:</strong> 123 Business St, New York, NY</p>
+                                        </div>
+
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-map-marker-alt me-1"></i>Get Directions
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-calendar-plus me-1"></i>Add to Calendar
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success">
+                                                <i class="fas fa-brain me-1"></i>Prepare Questions
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Past Interviews -->
+                            <div class="col-12 mb-3">
+                                <h6 class="text-muted mb-3">Recent Interview History</h6>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div>
+                                                <h6 class="mb-1">Phone Screening - React Developer</h6>
+                                                <p class="text-muted mb-1">StartupTech</p>
+                                                <p class="small mb-0">
+                                                    <i class="fas fa-calendar me-1"></i>October 18, 2024
+                                                </p>
+                                            </div>
+                                            <span class="badge bg-success">Passed</span>
+                                        </div>
+                                        
+                                        <div class="mb-2">
+                                            <p class="small mb-1"><strong>Feedback:</strong> Strong technical knowledge, good communication</p>
+                                            <p class="small mb-1"><strong>Next Step:</strong> Offer received - awaiting your response</p>
+                                        </div>
+
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye me-1"></i>View Feedback
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-download me-1"></i>Download Notes
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Assistant Modal -->
+        <div class="modal fade" id="aiAssistantModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            <i class="fas fa-robot me-2"></i>AI Career Assistant
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="ai-recommendation mb-3">
+                            <h6 class="fw-bold mb-2 mt-2">Personalized Insights</h6>
+                            <p class="mb-2">Based on your profile analysis and current job market trends:</p>
+                            <ul class="small">
+                                <li>Your React and TypeScript skills are in high demand (+15% this quarter)</li>
+                                <li>Consider adding Next.js to increase match rates by 23%</li>
+                                <li>Your response rate is 32% above average for your experience level</li>
+                                <li>Companies in fintech are actively seeking your skill set</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6 class="fw-bold">Recommended Actions:</h6>
+                            <div class="list-group list-group-flush">
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Update LinkedIn Profile</strong>
+                                        <small class="d-block text-muted">Add recent projects and skills</small>
+                                    </div>
+                                    <span class="badge bg-warning rounded-pill">High Priority</span>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Apply to Fintech Roles</strong>
+                                        <small class="d-block text-muted">92% compatibility with your profile</small>
+                                    </div>
+                                    <span class="badge bg-success rounded-pill">Recommended</span>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Learn Next.js</strong>
+                                        <small class="d-block text-muted">Increase job match rate by 23%</small>
+                                    </div>
+                                    <span class="badge bg-info rounded-pill">Skill Gap</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6 class="fw-bold">Market Insights:</h6>
+                            <div class="row">
+                                <div class="col-md-4 text-center">
+                                    <h4 class="text-primary">$95k</h4>
+                                    <small class="text-muted">Avg. Salary Match</small>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <h4 class="text-success">127</h4>
+                                    <small class="text-muted">Open Positions</small>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <h4 class="text-info">18%</h4>
+                                    <small class="text-muted">Competition Level</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-ai">Apply Recommendations</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Application Details Modal -->
+        <div class="modal fade" id="applicationModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Application Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <h6>Senior Frontend Developer</h6>
+                                <p class="text-muted">TechCorp Inc. • San Francisco, CA</p>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <span class="status-badge status-interview">Interview Scheduled</span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Application Date:</strong> October 15, 2024
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Last Update:</strong> October 20, 2024
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6>Application Timeline</h6>
+                            <div class="timeline">
+                                <div class="timeline-item completed">
+                                    <div class="timeline-marker bg-success"></div>
+                                    <div class="timeline-content">
+                                        <h6 class="mb-1">Application Submitted</h6>
+                                        <small class="text-muted">October 15, 2024</small>
+                                    </div>
+                                </div>
+                                <div class="timeline-item completed">
+                                    <div class="timeline-marker bg-success"></div>
+                                    <div class="timeline-content">
+                                        <h6 class="mb-1">Application Reviewed</h6>
+                                        <small class="text-muted">October 17, 2024</small>
+                                    </div>
+                                </div>
+                                <div class="timeline-item active">
+                                    <div class="timeline-marker bg-warning"></div>
+                                    <div class="timeline-content">
+                                        <h6 class="mb-1">Interview Scheduled</h6>
+                                        <small class="text-muted">October 20, 2024</small>
+                                    </div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-marker bg-light"></div>
+                                    <div class="timeline-content">
+                                        <h6 class="mb-1">Final Decision</h6>
+                                        <small class="text-muted">Pending</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6>Documents Submitted</h6>
+                            <div class="list-group">
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-file-pdf text-danger me-2"></i>
+                                        Resume_JohnDoe_2024.pdf
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </div>
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-file-alt text-primary me-2"></i>
+                                        Cover_Letter_TechCorp.pdf
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6>Interview Preparation</h6>
+                            <div class="ai-recommendation">
+                                <p class="mb-2">AI suggests focusing on:</p>
+                                <ul class="mb-0">
+                                    <li>Component lifecycle and optimization</li>
+                                    <li>State management with Redux/Context</li>
+                                    <li>Performance monitoring and debugging</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-outline-primary">
+                            <i class="fas fa-edit me-1"></i>Update Application
+                        </button>
+                        <button type="button" class="btn btn-primary">
+                            <i class="fas fa-calendar me-1"></i>Schedule Interview
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="../static/js/index.js"></script>
+</body>
+</html>

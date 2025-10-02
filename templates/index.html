@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobMatch AI - AI-Powered Job Matching</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #4285f4;
+            --light-blue: #e8f0fe;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        
+        .navbar {
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .brand-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #4285f4, #357ae8);
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 10px;
+        }
+        
+        .hero-section {
+            padding: 80px 0 60px;
+            text-align: center;
+        }
+        
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: #5f6368;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .card-section {
+            padding: 40px 0;
+        }
+        
+        .option-card {
+            border: none;
+            border-radius: 12px;
+            padding: 40px 30px;
+            height: 100%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .option-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+        
+        .icon-wrapper {
+            width: 64px;
+            height: 64px;
+            background-color: var(--light-blue);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+        
+        .icon-wrapper i {
+            font-size: 28px;
+            color: var(--primary-blue);
+        }
+        
+        .option-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #202124;
+        }
+        
+        .option-card .description {
+            color: #5f6368;
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        .feature-list li {
+            padding: 8px 0;
+            color: #202124;
+            font-size: 0.9rem;
+        }
+        
+        .feature-list li:before {
+            content: "•";
+            color: var(--primary-blue);
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .btn-get-started {
+            background-color: transparent;
+            color: var(--primary-blue);
+            border: none;
+            padding: 8px 0;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            transition: gap 0.3s ease;
+            gap: 5px;
+        }
+        
+        .btn-get-started:hover {
+            gap: 10px;
+            color: #357ae8;
+        }
+        
+        .btn-sign-in {
+            color: var(--primary-blue);
+            background-color: transparent;
+            border: 1px solid #dadce0;
+            padding: 8px 24px;
+            border-radius: 4px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+        
+        .btn-sign-in:hover {
+            background-color: #f8f9fa;
+            color: var(--primary-blue);
+        }
+        
+        .features-section {
+            padding: 60px 0;
+            background-color: white;
+        }
+        
+        .features-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #202124;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+        
+        .features-subtitle {
+            text-align: center;
+            color: #5f6368;
+            font-size: 1rem;
+            margin-bottom: 50px;
+        }
+        
+        .feature-item {
+            text-align: center;
+            padding: 0 20px;
+        }
+        
+        .feature-icon-wrapper {
+            width: 56px;
+            height: 56px;
+            background-color: var(--light-blue);
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .feature-icon-wrapper i {
+            font-size: 24px;
+            color: var(--primary-blue);
+        }
+        
+        .feature-item h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #202124;
+            margin-bottom: 12px;
+        }
+        
+        .feature-item p {
+            font-size: 0.9rem;
+            color: #5f6368;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <span class="brand-icon">
+                    <i class="bi bi-stars"></i>
+                </span>
+                <span class="fw-semibold">JobMatch AI</span>
+            </a>
+            <button class="btn btn-sign-in ms-auto">Sign In</button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">AI-Powered Job Matching</h1>
+            <p class="hero-subtitle">
+                Connect with opportunities that match your skills. Let AI find your perfect role or ideal candidate.
+            </p>
+        </div>
+    </section>
+
+    <!-- Cards Section -->
+    <section class="card-section">
+        <div class="container">
+            <div class="row g-4 mb-5">
+                <!-- Job Seeker Card -->
+                <div class="col-md-6">
+                    <div class="option-card">
+                        <div class="icon-wrapper">
+                            <i class="bi bi-person-search"></i>
+                        </div>
+                        <h3>I'm a Job Seeker</h3>
+                        <p class="description">
+                            Find your dream job with AI-powered recommendations based on your skills and experience.
+                        </p>
+                        <ul class="feature-list">
+                            <li>Personalized job recommendations</li>
+                            <li>One-click applications</li>
+                            <li>Track application status</li>
+                        </ul>
+                        <a href="#" class="btn-get-started">
+                            Get Started <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Employer Card -->
+                <div class="col-md-6">
+                    <div class="option-card">
+                        <div class="icon-wrapper">
+                            <i class="bi bi-briefcase"></i>
+                        </div>
+                        <h3>I'm an Employer</h3>
+                        <p class="description">
+                            Find the perfect candidates with AI-driven matching and streamlined hiring process.
+                        </p>
+                        <ul class="feature-list">
+                            <li>AI-powered candidate matching</li>
+                            <li>Manage job postings easily</li>
+                            <li>Track applications in real-time</li>
+                        </ul>
+                        <a href="#" class="btn-get-started">
+                            Get Started <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <h2 class="features-title">Powered by AI</h2>
+            <p class="features-subtitle">Smart features that make hiring and job hunting effortless</p>
+            
+            <div class="row g-4">
+                <!-- AI Matching Feature -->
+                <div class="col-md-4">
+                    <div class="feature-item">
+                        <div class="feature-icon-wrapper">
+                            <i class="bi bi-stars"></i>
+                        </div>
+                        <h4>AI Matching</h4>
+                        <p>Advanced algorithms match skills, experience, and preferences</p>
+                    </div>
+                </div>
+
+                <!-- Real-time Analytics Feature -->
+                <div class="col-md-4">
+                    <div class="feature-item">
+                        <div class="feature-icon-wrapper">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+                        <h4>Real-time Analytics</h4>
+                        <p>Track performance and insights for better decisions</p>
+                    </div>
+                </div>
+
+                <!-- Streamlined Process Feature -->
+                <div class="col-md-4">
+                    <div class="feature-item">
+                        <div class="feature-icon-wrapper">
+                            <i class="bi bi-arrow-right-circle"></i>
+                        </div>
+                        <h4>Streamlined Process</h4>
+                        <p>Simple workflow from posting to hiring in minutes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
