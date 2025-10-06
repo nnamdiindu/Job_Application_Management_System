@@ -123,8 +123,18 @@
         <h1 class="profile-title">Complete Your Profile</h1>
         <p class="profile-subtitle">Set up your company profile</p>
         
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
         <form action="{{ url_for('company_register') }}" method="post">
-            <div class="mb-3">
+            <!-- <div class="mb-3">
                 <label for="yourName" class="form-label">Your Name</label>
                 <input type="text" class="form-control" id="yourName" name="full-name">
             </div>
@@ -132,22 +142,37 @@
             <div class="mb-3">
                 <label for="companyName" class="form-label">Company Name</label>
                 <input type="text" class="form-control" id="companyName" name="company-name">
-            </div>
+            </div> -->
 
             <div class="mb-3">
                 <label for="companyEmail" class="form-label">Email</label>
                 <input type="email" class="form-control" id="companyEmail" name="company-email">
             </div>
             
-            <div class="mb-3">
+            <!-- <div class="mb-3">
                 <label for="location" class="form-label">Location</label>
-                <input type="text" class="form-control" id="location" placeholder="e.g., San Francisco, CA" name="location">
+                <input type="text" class="form-control" id="location" placeholder="e.g., Lagos, NG" name="location">
+            </div> -->
+
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone</label>
+                <input type="tel" class="form-control" id="tel" placeholder="+234 8073 138 700" name="phone">
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password">
+            </div>
+
+            <div class="mb-3">
+                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                <input type="password" class="form-control" id="confirmPassword" name="confirm-password">
             </div>
             
-            <div class="mb-3">
+            <!-- <div class="mb-3">
                 <label for="bio" class="form-label">Bio</label>
                 <textarea class="form-control" id="bio" name="bio" placeholder="About your company..."></textarea>
-            </div>
+            </div> -->
             
             <button type="submit" class="btn btn-continue">Continue</button>
         </form>
