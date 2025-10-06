@@ -1,0 +1,356 @@
+:root {
+    --primary-blue: #4285f4;
+    --light-blue: #e8f0fe;
+    --green: #1e8e3e;
+    --light-green: #e6f4ea;
+}
+
+body {
+    background-color: #f8f9fa;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+/* Navbar */
+.navbar {
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    padding: 12px 0;
+}
+
+.brand-section {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.brand-main {
+    display: flex;
+    align-items: center;
+}
+
+.brand-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #4285f4, #357ae8);
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-right: 10px;
+}
+
+.brand-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #202124;
+}
+
+.brand-subtitle {
+    font-size: 0.8rem;
+    color: #5f6368;
+    margin-left: 46px;
+}
+
+.user-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.company-name {
+    color: #5f6368;
+    font-size: 0.9rem;
+}
+
+.btn-sign-out {
+    color: #5f6368;
+    background-color: transparent;
+    border: 1px solid #dadce0;
+    padding: 6px 20px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+}
+
+.btn-sign-out:hover {
+    background-color: #f8f9fa;
+}
+
+/* Navigation Tabs */
+.nav-tabs-container {
+    background-color: white;
+    border-bottom: 1px solid #e8eaed;
+}
+
+.nav-tabs {
+    border-bottom: none;
+}
+
+.nav-tabs .nav-link {
+    color: #5f6368;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 16px 24px;
+    font-size: 0.95rem;
+    transition: color 0.2s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #202124;
+    border-color: transparent;
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--primary-blue);
+    border-bottom-color: var(--primary-blue);
+    background-color: transparent;
+}
+
+/* Page Header */
+.page-header {
+    padding: 32px 0 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.page-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #202124;
+    margin: 0;
+}
+
+.btn-post-job {
+    background-color: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.btn-post-job:hover {
+    background-color: #357ae8;
+}
+
+/* Job Card */
+.job-posting-card {
+    background: white;
+    border: 1px solid #e8eaed;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+    transition: box-shadow 0.2s ease;
+}
+
+.job-posting-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.job-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.job-title-section {
+    flex: 1;
+}
+
+.job-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #202124;
+    margin-bottom: 8px;
+    display: inline-block;
+    margin-right: 12px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    background-color: var(--light-green);
+    color: var(--green);
+}
+
+.job-meta {
+    display: flex;
+    gap: 16px;
+    color: #5f6368;
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+}
+
+.job-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.job-stats {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 16px;
+    color: #5f6368;
+    font-size: 0.9rem;
+}
+
+.job-stats-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.job-stats-item i {
+    font-size: 0.85rem;
+}
+
+.job-description {
+    color: #5f6368;
+    font-size: 0.95rem;
+    margin-bottom: 16px;
+    line-height: 1.5;
+}
+
+.job-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.job-tag {
+    background-color: #f1f3f4;
+    color: #202124;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+.btn-view-applications {
+    background-color: transparent;
+    color: #5f6368;
+    border: 1px solid #dadce0;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn-view-applications:hover {
+    background-color: #f8f9fa;
+    border-color: #5f6368;
+}
+
+/* Modal Styles */
+.modal-content {
+    border-radius: 12px;
+    border: none;
+}
+
+.modal-header {
+    border-bottom: 1px solid #e8eaed;
+    padding: 24px 24px 16px;
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #202124;
+}
+
+.btn-close {
+    opacity: 0.5;
+}
+
+.btn-close:hover {
+    opacity: 1;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #202124;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.form-label .text-danger {
+    color: #d93025;
+}
+
+.form-control, .form-select {
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1);
+    outline: none;
+}
+
+.form-control::placeholder {
+    color: #9aa0a6;
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.modal-footer {
+    border-top: none;
+    padding: 16px 24px 24px;
+    gap: 12px;
+}
+
+.btn-cancel {
+    background-color: transparent;
+    color: #5f6368;
+    border: 1px solid #dadce0;
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.btn-cancel:hover {
+    background-color: #f8f9fa;
+}
+
+.btn-post-job-submit {
+    background-color: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 10px 32px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.btn-post-job-submit:hover {
+    background-color: #357ae8;
+}
