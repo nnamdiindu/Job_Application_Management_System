@@ -167,7 +167,7 @@ def job_seeker_register():
 
 @app.route("/login")
 def login():
-    return "<h1>Login Page</h1>"
+    return render_template("login.html")
 
 @app.route("/company-dashboard")
 def company_dashboard():

@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employer Dashboard - JobMatch AI</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
+        rel="stylesheet">
     <link rel="apple-touch-icon" sizes="180x180" href="static/images/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="static/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="static/images/favicon-16x16.png">
     <link rel="manifest" href="static/images/site.webmanifest">
     <link rel="stylesheet" href="../static/css/company-dashboard.css">
 </head>
+
 <body>
     <!-- Navbar -->
     <nav class="navbar">
@@ -27,7 +30,7 @@
             </div>
             <div class="user-section">
                 <span class="company-name">Paycheck Technologies</span>
-                <button class="btn btn-sign-out">Sign Out</button>
+                <a href="{{ url_for('logout') }}" class="btn btn-sign-out">Sign Out</a>
             </div>
         </div>
     </nav>
@@ -67,11 +70,11 @@
                         <span class="status-badge">Active</span>
                     </div>
                 </div>
-                
+
                 <div class="job-meta">
                     <span class="job-meta-item">San Franscisco • full-time</span>
                 </div>
-                
+
                 <div class="job-stats">
                     <div class="job-stats-item">
                         <i class="bi bi-people"></i>
@@ -82,16 +85,16 @@
                         <span>Posted 9/30/2025</span>
                     </div>
                 </div>
-                
+
                 <p class="job-description">DDD</p>
-                
+
                 <div class="job-tags">
                     <span class="job-tag">React</span>
                     <span class="job-tag">Typescript</span>
                     <span class="job-tag">Nodejs</span>
                     <span class="job-tag">AWS</span>
                 </div>
-                
+
                 <button class="btn btn-view-applications">
                     <i class="bi bi-eye"></i>
                     View Applications
@@ -109,22 +112,27 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="postJobForm">
+                    <form id="postJobForm" , method="post">
                         <!-- Job Title -->
                         <div class="mb-3">
-                            <label for="jobTitle" class="form-label">Job Title <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="jobTitle" placeholder="e.g., Senior Frontend Developer" required>
+                            <label for="jobTitle" class="form-label">Job Title <span
+                                    class="text-danger">*</span></label>
+                            <input name="job-title" type="text" class="form-control" id="jobTitle"
+                                placeholder="e.g., Senior Frontend Developer" required>
                         </div>
 
                         <!-- Location and Job Type Row -->
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="location" class="form-label">Location <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="location" placeholder="e.g., Remote, San Francisco" required>
+                                <label for="location" class="form-label">Location <span
+                                        class="text-danger">*</span></label>
+                                <input name="location" type="text" class="form-control" id="location"
+                                    placeholder="e.g., Remote, San Francisco" required>
                             </div>
                             <div class="col-md-6">
-                                <label for="jobType" class="form-label">Job Type <span class="text-danger">*</span></label>
-                                <select class="form-select" id="jobType" required>
+                                <label for="jobType" class="form-label">Job Type <span
+                                        class="text-danger">*</span></label>
+                                <select name="job-type" class="form-select" id="jobType" required>
                                     <option value="Full-time" selected>Full-time</option>
                                     <option value="Part-time">Part-time</option>
                                     <option value="Contract">Contract</option>
@@ -136,25 +144,30 @@
                         <!-- Salary Range -->
                         <div class="mb-3">
                             <label for="salaryRange" class="form-label">Salary Range</label>
-                            <input type="text" class="form-control" id="salaryRange" placeholder="e.g., $80k - $120k">
+                            <input name="salary-range" type="text" class="form-control" id="salaryRange"
+                                placeholder="e.g., $80k - $120k">
                         </div>
 
                         <!-- Description -->
                         <div class="mb-3">
-                            <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
-                            <textarea class="form-control" id="description" placeholder="Describe the role and responsibilities..." required></textarea>
+                            <label for="description" class="form-label">Description <span
+                                    class="text-danger">*</span></label>
+                            <textarea name="description" class="form-control" id="description"
+                                placeholder="Describe the role and responsibilities..." required></textarea>
                         </div>
 
                         <!-- Requirements -->
-                        <div class="mb-3">
+                        <!-- <div class="mb-3">
                             <label for="requirements" class="form-label">Requirements <span class="text-danger">*</span></label>
                             <textarea class="form-control" id="requirements" placeholder="List qualifications and requirements..." required></textarea>
-                        </div>
+                        </div> -->
 
                         <!-- Required Skills -->
                         <div class="mb-3">
-                            <label for="skills" class="form-label">Required Skills (comma-separated) <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="skills" placeholder="e.g., React, TypeScript, Node.js, AWS" required>
+                            <label for="skills" class="form-label">Required Skills (comma-separated) <span
+                                    class="text-danger">*</span></label>
+                            <input name="skills" type="text" class="form-control" id="skills"
+                                placeholder="e.g., React, TypeScript, Node.js, AWS" required>
                         </div>
                     </form>
                 </div>
@@ -169,16 +182,49 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script>
         // Handle form submission
-        document.getElementById('postJobForm').addEventListener('submit', function(e) {
+        document.getElementById('postJobForm').addEventListener('submit', function (e) {
             e.preventDefault();
-            // Here you would typically send the data to your backend
-            alert('Job posted successfully!');
-            // Close the modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('postJobModal'));
-            modal.hide();
-            // Reset form
-            this.reset();
+
+            // Collect form data
+            const formData = {
+                "job-title": document.getElementById('jobTitle').value,
+                "location": document.getElementById('location').value,
+                "job-type": document.getElementById('jobType').value,
+                "salary-range": document.getElementById('salaryRange').value,
+                "description": document.getElementById('description').value,
+                "skills": document.getElementById('skills').value
+            };
+
+            // Send data to backend
+            fetch("/api/post-job", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            })
+                .then(response => {
+                    if (!response.ok) {  // Fixed typo: reponse -> response
+                        throw new Error(`HTTP error! status: ${response.status}`);  // Fixed typo
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    if (result.status === "success") {
+                        alert('Job posted successfully!');
+
+                        // Close modal and reset form on success
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('postJobModal'));
+                        modal.hide();
+                        this.reset();
+                    } else {
+                        alert("Error: " + (result.message || "Failed to post job"));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while posting the job: ' + error.message);
+                });
         });
     </script>
 </body>
+
 </html>
