@@ -1,12 +1,12 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey, Integer, String, DateTime, select
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
 from datetime import datetime, timezone
 from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin, login_user, login_manager, current_user, LoginManager, login_required
+from flask_login import UserMixin, login_user, login_manager, current_user, LoginManager, login_required, logout_user
 
 load_dotenv()
 
@@ -24,7 +24,7 @@ class Base(DeclarativeBase):
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -165,15 +165,68 @@ def job_seeker_register():
 
     return render_template("job-seeker-setup.html", current_user=current_user)
 
-@app.route("/login")
+@app.route("/login", methods=["GET", "POST"])
 def login():
+    if request.method == "POST":
+        email = request.form.get("email")
+
+        user = db.session.execute(db.select(User).where(User.email == email)).scalar()
+        if user:
+            if user.role == "company":
+                if check_password_hash(user.password, request.form.get("password")):
+                    return redirect(url_for("company_dashboard"))
+                else:
+                    flash("Incorrect password, please try again", "error")
+                    return redirect(url_for("login"))
+            else:
+                return redirect(url_for("job_seeker_dashboard"))
+
     return render_template("login.html")
+
+@app.route("/logout")
+def logout():
+    logout_user()
+    return redirect(url_for("login"))
+
 
 @app.route("/company-dashboard")
 def company_dashboard():
     return render_template("company-dashboard.html", current_user=current_user)
 
-@app.route("/register-dashboard")
+@app.route("/api/post-job", methods=["POST"])
+def post_job():
+    try:
+        data = request.get_json()
+        print(data)
+
+        if not data:
+            return jsonify({"status": "error", "message": "No data provided"}), 400
+
+
+        new_job = Job(
+            title=data.get("job-title"),
+            location=data.get("location"),
+            job_type=data.get("job-type"),
+            salary_range=data.get("salary-range"),
+            description=data.get("description"),
+            skills_required=data.get("skills")
+        )
+
+        db.session.add(new_job)
+        db.session.commit()
+
+        # print(job_title, location, job_type, salary_range, description, skills)
+
+        return jsonify({
+            "status": "success",
+            "message": "Job posted successfully",
+        })
+
+    except Exception as e:
+        print(f"Error posting job: {e}")
+        return jsonify({'status': 'error', 'message': f'Failed to post job: {str(e)}'}), 500
+
+@app.route("/job-seeker-dashboard")
 def job_seeker_dashboard():
     return render_template("job-seeker-dashboard.html")
 
