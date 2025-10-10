@@ -1,18 +1,23 @@
 import os
+from typing import Optional, List
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import ForeignKey, Integer, String, DateTime, select
-from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
+from sqlalchemy import ForeignKey, Integer, String, DateTime, select, Text, Boolean, Float
+from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship
 from datetime import datetime, timezone
 from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, login_manager, current_user, LoginManager, login_required, logout_user
+from flask_bootstrap import Bootstrap5
+from forms import CompleteProfile
+
+app = Flask(__name__)
 
 load_dotenv()
 
-app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY")
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DB_URI")
+bootstrap = Bootstrap5(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -35,10 +40,29 @@ class User(UserMixin, db.Model):
     role: Mapped[str] = mapped_column(String(20), default="user", nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
 
+    profile: Mapped[Optional["UserProfile"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+        uselist=False
+    )
+    applications: Mapped[List["Application"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+    recommendations: Mapped[List["JobRecommendation"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan"
+    )
+    posted_jobs: Mapped[List["Job"]] = relationship(
+        back_populates="employer",
+        cascade="all, delete-orphan"
+    )
+
 class UserProfile(UserMixin, db.Model):
     __tablename__ = "userprofiles"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'), unique=True)
     full_name: Mapped[str] = mapped_column(String(100))
     location: Mapped[str] = mapped_column(String(320), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
@@ -50,21 +74,84 @@ class UserProfile(UserMixin, db.Model):
     # resume_url: Mapped[bytes] = mapped_column
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
 
+    user: Mapped["User"] = relationship(back_populates="profile")
+
+
 class Job(db.Model):
     __tablename__ = "jobs"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    employer_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
     company: Mapped[str] = mapped_column(String(200), nullable=False)
     salary_range: Mapped[str] = mapped_column(String(100), nullable=False)
     skills_required: Mapped[str] = mapped_column(String(320), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
-    employer_id: Mapped[int] = mapped_column(ForeignKey("userprofiles.id"), nullable=False)
+    # employer_id: Mapped[int] = mapped_column(ForeignKey("userprofiles.id"), nullable=False)
     location: Mapped[str] = mapped_column(String(320), nullable=False)
     description: Mapped[str] = mapped_column(String(320), nullable=False)
     title: Mapped[str] = mapped_column(String(50), nullable=False)
     job_type: Mapped[str] = mapped_column(String(20), nullable=False)
     requirements: Mapped[str] = mapped_column(String(200), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
+    employer: Mapped["User"] = relationship(back_populates="posted_jobs")
+
+    applications: Mapped[List["Application"]] = relationship(
+        back_populates="job",
+        cascade="all, delete-orphan"
+    )
+    recommendations: Mapped[List["JobRecommendation"]] = relationship(
+        back_populates="job",
+        cascade="all, delete-orphan"
+    )
+
+
+class Application(db.Model):
+    __tablename__ = 'applications'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
+    job_id: Mapped[int] = mapped_column(ForeignKey('jobs.id', ondelete='CASCADE'))
+    match_score: Mapped[float] = mapped_column(Float)
+
+    cover_letter: Mapped[Optional[str]] = mapped_column(Text)
+    resume_url: Mapped[Optional[str]] = mapped_column(String(500))
+
+    # Tracking
+    applied_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
+    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
+    reviewed_at: Mapped[Optional[datetime]]
+
+    # Relationships
+    user: Mapped["User"] = relationship(back_populates="applications")
+    job: Mapped["Job"] = relationship(back_populates="applications")
+
+
+class JobRecommendation(db.Model):
+    __tablename__ = 'job_recommendations'
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
+    job_id: Mapped[int] = mapped_column(ForeignKey('jobs.id', ondelete='CASCADE'))
+
+    # AI recommendation metrics
+    match_score: Mapped[float] = mapped_column(Float)  # 0.0 to 1.0
+    skill_match_score: Mapped[Optional[float]] = mapped_column(Float)
+    location_match_score: Mapped[Optional[float]] = mapped_column(Float)
+    salary_match_score: Mapped[Optional[float]] = mapped_column(Float)
+    experience_match_score: Mapped[Optional[float]] = mapped_column(Float)
+
+    # Recommendation explanation
+    match_reasons: Mapped[Optional[str]] = mapped_column(Text)  # JSON format for detailed reasons
+    missing_skills: Mapped[Optional[str]] = mapped_column(Text)  # JSON format for skills gap analysis
+
+    # Metadata
+    recommended_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
+    viewed_at: Mapped[Optional[datetime]]
+
+    # Relationships
+    user: Mapped["User"] = relationship(back_populates="recommendations")
+    job: Mapped["Job"] = relationship(back_populates="recommendations")
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -110,7 +197,7 @@ def company_register():
 
             login_user(new_user)
 
-            return redirect(url_for("company_dashboard"))
+            return redirect(url_for("registration_success"))
 
         else:
             flash("Password does not match, please try again", "error")
@@ -143,11 +230,6 @@ def job_seeker_register():
                 password=halted_and_salted_password,
                 phone=request.form.get("phone"),
                 email=request.form.get("email"),
-                # full_name=request.form.get("full-name"),
-                # location = request.form.get("location"),
-                # skills = request.form.get("skills"),
-                # years_experience = request.form.get("years-experience"),
-                # bio = request.form.get("bio"),
                 role="job_seeker"
             )
 
@@ -156,7 +238,7 @@ def job_seeker_register():
 
             login_user(new_user)
 
-            return redirect(url_for("job_seeker_dashboard"))
+            return redirect(url_for("registration_success"))
 
         else:
             flash("Password does not match, please try again", "error")
@@ -183,6 +265,49 @@ def login():
 
     return render_template("login.html")
 
+
+@app.route("/complete-profile", methods=["GET", "POST"])
+def complete_profile():
+    form = CompleteProfile()
+
+    try:
+        if form.validate_on_submit():
+
+            result = db.session.execute(select(User).where(User.id == current_user.id)).scalar_one()
+            user_role = result.role
+
+            new_profile = UserProfile(
+                full_name=request.form.get("full_name"),
+                user_id=current_user.id,
+                location=request.form.get("location"),
+                company_name=request.form.get("company_name"),
+                skills=request.form.get("skills"),
+                bio=request.form.get("bio"),
+                experience_years=request.form.get("experience_years"),
+                role=user_role
+            )
+
+            db.session.add(new_profile)
+            db.session.commit()
+
+            if user_role == "company":
+                return redirect(url_for("company_dashboard"))
+            else:
+                return redirect(url_for("job_seeker_dashboard"))
+
+    except Exception as e:
+        print(f"Error submitting form: {e}")
+        db.session.rollback()
+        return jsonify({'status': 'error', 'message': f'Failed to submit form: {str(e)}'}), 500
+
+    return render_template("complete-profile.html", form=form, current_user=current_user)
+
+
+@app.route("/registration-success")
+def registration_success():
+    return render_template("registration-success.html")
+
+
 @app.route("/logout")
 def logout():
     logout_user()
@@ -199,11 +324,16 @@ def post_job():
         data = request.get_json()
         print(data)
 
+        # result = db.session.execute(select(User).where(User.id == current_user.id)).scalar_one()
+        # user_email = result.email
+
         if not data:
             return jsonify({"status": "error", "message": "No data provided"}), 400
 
 
         new_job = Job(
+            employer_id=current_user.id,
+            company=None,
             title=data.get("job-title"),
             location=data.get("location"),
             job_type=data.get("job-type"),
@@ -214,8 +344,6 @@ def post_job():
 
         db.session.add(new_job)
         db.session.commit()
-
-        # print(job_title, location, job_type, salary_range, description, skills)
 
         return jsonify({
             "status": "success",
