@@ -63,16 +63,17 @@
         <!-- Job Postings -->
         <div class="job-postings-section">
             <!-- Job Card -->
+            {% for job in jobs %}
             <div class="job-posting-card">
                 <div class="job-header">
                     <div class="job-title-section">
-                        <h2 class="job-title">Senior Frontend Developer</h2>
+                        <h2 class="job-title">{{ job.title }}</h2>
                         <span class="status-badge">Active</span>
                     </div>
                 </div>
 
                 <div class="job-meta">
-                    <span class="job-meta-item">San Franscisco • full-time</span>
+                    <span class="job-meta-item">{{ job.location }} • {{ job.job_type }}</span>
                 </div>
 
                 <div class="job-stats">
@@ -82,17 +83,18 @@
                     </div>
                     <div class="job-stats-item">
                         <i class="bi bi-clock"></i>
-                        <span>Posted 9/30/2025</span>
+                        <span>Posted {{ job.created_at }}</span>
                     </div>
                 </div>
 
-                <p class="job-description">DDD</p>
+                <p class="job-description">{{ job.description }}</p>
 
                 <div class="job-tags">
-                    <span class="job-tag">React</span>
-                    <span class="job-tag">Typescript</span>
-                    <span class="job-tag">Nodejs</span>
-                    <span class="job-tag">AWS</span>
+                    <span class="job-tag">{{ job.skills_required.split(',')[0] }}</span>
+                    <span class="job-tag">{{ job.skills_required.split(',')[1] }}</span>
+                    <span class="job-tag">{{ job.skills_required.split(',')[2] }}</span>
+                    <span class="job-tag">{{ job.skills_required.split(',')[3] }}</span>
+                    <span class="job-tag">{{ job.skills_required.split(',')[4] }}</span>
                 </div>
 
                 <button class="btn btn-view-applications">
@@ -100,6 +102,7 @@
                     View Applications
                 </button>
             </div>
+            {% endfor %}
         </div>
     </div>
 
