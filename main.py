@@ -6,6 +6,7 @@ from sqlalchemy import ForeignKey, Integer, String, DateTime, select, Text, Bool
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship
 from datetime import datetime, timezone
 from dotenv import load_dotenv
+from sqlalchemy.testing.plugin.plugin_base import requirements
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, login_manager, current_user, LoginManager, login_required, logout_user
 from flask_bootstrap import Bootstrap5
@@ -256,6 +257,7 @@ def login():
         if user:
             if user.role == "company":
                 if check_password_hash(user.password, request.form.get("password")):
+                    login_user(user)
                     return redirect(url_for("company_dashboard"))
                 else:
                     flash("Incorrect password, please try again", "error")
@@ -315,31 +317,36 @@ def logout():
 
 
 @app.route("/company-dashboard")
+@login_required
 def company_dashboard():
-    return render_template("company-dashboard.html", current_user=current_user)
+    jobs = db.session.execute(db.select(Job).where(UserProfile.id == current_user.id).order_by(Job.created_at.desc())).scalars().all()
+    return render_template("company-dashboard.html", current_user=current_user, jobs=jobs)
 
 @app.route("/api/post-job", methods=["POST"])
+@login_required
 def post_job():
     try:
         data = request.get_json()
+        user_id = current_user.id
         print(data)
 
-        # result = db.session.execute(select(User).where(User.id == current_user.id)).scalar_one()
-        # user_email = result.email
+        result = db.session.execute(select(UserProfile).where(UserProfile.id == user_id)).scalar_one()
+        company_name = result.company_name
 
         if not data:
             return jsonify({"status": "error", "message": "No data provided"}), 400
 
 
         new_job = Job(
-            employer_id=current_user.id,
-            company=None,
+            employer_id=user_id,
+            company=company_name,
             title=data.get("job-title"),
             location=data.get("location"),
             job_type=data.get("job-type"),
             salary_range=data.get("salary-range"),
             description=data.get("description"),
-            skills_required=data.get("skills")
+            skills_required=data.get("skills"),
+            requirements="vacant for now"
         )
 
         db.session.add(new_job)
@@ -352,6 +359,7 @@ def post_job():
 
     except Exception as e:
         print(f"Error posting job: {e}")
+        db.session.rollback()
         return jsonify({'status': 'error', 'message': f'Failed to post job: {str(e)}'}), 500
 
 @app.route("/job-seeker-dashboard")
