@@ -70,41 +70,44 @@
         <!-- Job Listings -->
         <div class="jobs-section">
             <!-- Job Card 1 -->
+             {% for job in jobs %}
             <div class="job-card">
-                <h2 class="job-title">Senior Frontend Developer</h2>
-                <a href="#" class="company-name">Paycheck Technologies</a>
+                <h2 class="job-title">{{ job.title }}</h2>
+                <a href="#" class="company-name">{{ job.company }}</a>
                 
                 <div class="job-meta">
                     <div class="job-meta-item">
                         <i class="bi bi-geo-alt"></i>
-                        <span>San Franscisco</span>
+                        <span>{{ job.location }}</span>
                     </div>
                     <div class="job-meta-item">
                         <i class="bi bi-briefcase"></i>
-                        <span>Full Time</span>
+                        <span>{{ job.job_type }}</span>
                     </div>
                     <div class="job-meta-item">
-                        <i class="bi bi-currency-dollar"></i>
-                        <span>$80k - $120k</span>
+                        <!-- <i class="bi bi-currency-dollar"></i> -->
+                        <span>{{ job.salary_range }}</span>
                     </div>
                     <div class="job-meta-item">
                         <i class="bi bi-clock"></i>
-                        <span>9/30/2025</span>
+                        <span>{{ job.created_at.strftime("%B %d, %Y") }}</span>
                     </div>
                 </div>
                 
-                <p class="job-description">DDD</p>
+                <p class="job-description">{{ job.description }}</p>
                 
                 <div class="job-tags">
-                    <span class="job-tag">React</span>
-                    <span class="job-tag">Typescript</span>
-                    <span class="job-tag">Nodejs</span>
-                    <span class="job-tag">AWS</span>
+                    <span class="job-tag">{{ job.skills_required.split(',')[0] }}</span>
+                    <span class="job-tag">{{ job.skills_required.split(',')[1] }}</span>
+                    <span class="job-tag">{{ job.skills_required.split(',')[2] }}</span>
+                    <span class="job-tag">{{ job.skills_required.split(',')[3] }}</span>
+                    <span class="job-tag">{{ job.skills_required.split(',')[4] }}</span>
                 </div>
                 
                 <button class="btn btn-apply">Apply Now</button>
                 <div style="clear: both;"></div>
             </div>
+            {% endfor %}
         </div>
     </div>
 
