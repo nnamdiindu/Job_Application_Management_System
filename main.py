@@ -6,7 +6,6 @@ from sqlalchemy import ForeignKey, Integer, String, DateTime, select, Text, Bool
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship
 from datetime import datetime, timezone
 from dotenv import load_dotenv
-from sqlalchemy.testing.plugin.plugin_base import requirements
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, login_manager, current_user, LoginManager, login_required, logout_user
 from flask_bootstrap import Bootstrap5
@@ -254,6 +253,7 @@ def login():
         email = request.form.get("email")
 
         user = db.session.execute(db.select(User).where(User.email == email)).scalar()
+
         if user:
             if user.role == "company":
                 if check_password_hash(user.password, request.form.get("password")):
@@ -263,6 +263,7 @@ def login():
                     flash("Incorrect password, please try again", "error")
                     return redirect(url_for("login"))
             else:
+                login_user(user)
                 return redirect(url_for("job_seeker_dashboard"))
 
     return render_template("login.html")
@@ -319,18 +320,23 @@ def logout():
 @app.route("/company-dashboard")
 @login_required
 def company_dashboard():
-    jobs = db.session.execute(db.select(Job).where(UserProfile.id == current_user.id).order_by(Job.created_at.desc())).scalars().all()
-    return render_template("company-dashboard.html", current_user=current_user, jobs=jobs)
+    jobs = db.session.execute(
+        db.select(Job)
+        .where(Job.employer_id == current_user.id)
+        .order_by(Job.created_at.desc())
+    ).scalars().all()
+    
+    result = db.session.execute(db.select(UserProfile).where(UserProfile.id == current_user.id)).scalar()
+    company_name = result.company_name
+    return render_template("company-dashboard.html", current_user=current_user, jobs=jobs, company_name=company_name)
 
 @app.route("/api/post-job", methods=["POST"])
 @login_required
 def post_job():
     try:
         data = request.get_json()
-        user_id = current_user.id
-        print(data)
 
-        result = db.session.execute(select(UserProfile).where(UserProfile.id == user_id)).scalar_one()
+        result = db.session.execute(select(UserProfile).where(UserProfile.id == current_user.id)).scalar_one()
         company_name = result.company_name
 
         if not data:
@@ -338,7 +344,7 @@ def post_job():
 
 
         new_job = Job(
-            employer_id=user_id,
+            employer_id=current_user.id,
             company=company_name,
             title=data.get("job-title"),
             location=data.get("location"),
@@ -362,9 +368,15 @@ def post_job():
         db.session.rollback()
         return jsonify({'status': 'error', 'message': f'Failed to post job: {str(e)}'}), 500
 
+
 @app.route("/job-seeker-dashboard")
+@login_required
 def job_seeker_dashboard():
-    return render_template("job-seeker-dashboard.html")
+    jobs = db.session.execute(
+        db.select(Job).order_by(Job.created_at.desc())).scalars().all()
+    result = db.session.execute(db.select(UserProfile).where(UserProfile.id == current_user.id)).scalar()
+    full_name = result.full_name
+    return render_template("job-seeker-dashboard.html", jobs=jobs, current_user=current_user, full_name=full_name)
 
 if __name__ == "__main__":
     app.run(debug=True)
