@@ -12,6 +12,9 @@
     <link rel="icon" type="image/png" sizes="32x32" href="static/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="static/images/favicon-16x16.png">
     <link rel="manifest" href="static/images/site.webmanifest">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
+        rel="stylesheet">
     <link rel="stylesheet" href="../static/css/company-dashboard.css">
 </head>
 
@@ -38,12 +41,16 @@
     <!-- Navigation Tabs -->
     <div class="nav-tabs-container">
         <div class="container">
-            <ul class="nav nav-tabs">
+            <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" href="#">My Jobs ({{ jobs | length }})</a>
+                    <a class="nav-link active" id="jobs-tab" data-bs-toggle="tab" href="#jobs" role="tab">
+                        My Jobs ({{ jobs | length }})
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Applications (0)</a>
+                    <a class="nav-link" id="applications-tab" data-bs-toggle="tab" href="#applications" role="tab">
+                        Applications (3)
+                    </a>
                 </li>
             </ul>
         </div>
@@ -51,62 +58,226 @@
 
     <!-- Main Content -->
     <div class="container">
-        <!-- Page Header -->
-        <div class="page-header">
-            <h1 class="page-title">Job Postings</h1>
-            <button class="btn btn-post-job" data-bs-toggle="modal" data-bs-target="#postJobModal">
-                <i class="bi bi-plus-lg"></i>
-                Post New Job
-            </button>
-        </div>
+        <div class="tab-content-wrapper">
+            <!-- Jobs Tab -->
+            <div class="tab-pane active" id="jobs" role="tabpanel">
+                <div class="page-header">
+                    <h1 class="page-title">Job Postings</h1>
+                    <button class="btn btn-post-job" data-bs-toggle="modal" data-bs-target="#postJobModal">
+                        <i class="bi bi-plus-lg"></i>
+                        Post New Job
+                    </button>
+                </div>
 
-        <!-- Job Postings -->
-        <div class="job-postings-section">
-            <!-- Job Card -->
-            {% if jobs %}
-            {% for job in jobs %}
-            <div class="job-posting-card">
-                <div class="job-header">
-                    <div class="job-title-section">
-                        <h2 class="job-title">{{ job.title }}</h2>
-                        <span class="status-badge">Active</span>
+                <div class="job-postings-section">
+                    <!-- Sample Job Card 1 -->
+                    {% if jobs %}
+                    {% for job in jobs %}
+                    <div class="job-posting-card">
+                        <div class="job-header">
+                            <div class="job-title-section">
+                                <h2 class="job-title">{{ job.title }}</h2>
+                                <span class="status-badge">Active</span>
+                            </div>
+                        </div>
+
+                        <div class="job-meta">
+                            <span class="job-meta-item">{{ job.location }} • {{ job.job_type }}</span>
+                        </div>
+
+                        <div class="job-stats">
+                            <div class="job-stats-item">
+                                <i class="bi bi-people"></i>
+                                <span>2 Applications</span>
+                            </div>
+                            <div class="job-stats-item">
+                                <i class="bi bi-clock"></i>
+                                <span>Posted {{ job.created_at.strftime("%B %d, %Y") }}</span>
+                            </div>
+                        </div>
+
+                        <p class="job-description">{{ job.description }}</p>
+
+                        <div class="job-tags">
+                            <span class="job-tag">{{ job.skills_required.split(',')[0] }}</span>
+                            <span class="job-tag">{{ job.skills_required.split(',')[1] }}</span>
+                            <span class="job-tag">{{ job.skills_required.split(',')[2] }}</span>
+                            <span class="job-tag">{{ job.skills_required.split(',')[3] }}</span>
+                            <span class="job-tag">{{ job.skills_required.split(',')[4] }}</span>
+                        </div>
+
+                        <button class="btn btn-view-applications">
+                            <i class="bi bi-eye"></i>
+                            View Applications
+                        </button>
                     </div>
-                </div>
-
-                <div class="job-meta">
-                    <span class="job-meta-item">{{ job.location }} • {{ job.job_type }}</span>
-                </div>
-
-                <div class="job-stats">
-                    <div class="job-stats-item">
-                        <i class="bi bi-people"></i>
-                        <span>0 Applications</span>
+                    {% endfor %}
+                    {% else %}
+                    <div>
+                        <p>No jobs posted yet</p>
                     </div>
-                    <div class="job-stats-item">
-                        <i class="bi bi-clock"></i>
-                        <span>Posted {{ job.created_at.strftime("%B %d, %Y") }}</span>
-                    </div>
+                    {% endif %}
                 </div>
-
-                <p class="job-description">{{ job.description }}</p>
-
-                <div class="job-tags">
-                    <span class="job-tag">{{ job.skills_required.split(',')[0] }}</span>
-                    <span class="job-tag">{{ job.skills_required.split(',')[1] }}</span>
-                    <span class="job-tag">{{ job.skills_required.split(',')[2] }}</span>
-                    <span class="job-tag">{{ job.skills_required.split(',')[3] }}</span>
-                    <span class="job-tag">{{ job.skills_required.split(',')[4] }}</span>
-                </div>
-
-                <button class="btn btn-view-applications">
-                    <i class="bi bi-eye"></i>
-                    View Applications
-                </button>
             </div>
-            {% endfor %}
-        {% else %}
-        <div><p>No jobs posted yet</p></div>
-        {% endif %}
+
+            <!-- Applications Tab -->
+            <div class="tab-pane" id="applications" role="tabpanel">
+                <div class="page-header">
+                    <h1 class="page-title">Applications</h1>
+                </div>
+
+                <div class="applications-section">
+                    <!-- Sample Application 1 -->
+                    <div class="application-card">
+                        <div class="applicant-header">
+                            <div class="applicant-info">
+                                <div class="applicant-avatar">AO</div>
+                                <div class="applicant-details">
+                                    <h3>Adebayo Oluwaseun</h3>
+                                    <p class="applicant-position">Applied for: Junior Frontend Developer</p>
+                                </div>
+                            </div>
+                            <div class="application-status">
+                                <span class="status-label status-new">New</span>
+                            </div>
+                        </div>
+
+                        <div class="application-meta">
+                            <div class="application-meta-item">
+                                <i class="bi bi-calendar"></i>
+                                <span>Applied 2 hours ago</span>
+                            </div>
+                            <div class="application-meta-item">
+                                <i class="bi bi-geo-alt"></i>
+                                <span>Lagos, Nigeria</span>
+                            </div>
+                            <div class="application-meta-item">
+                                <i class="bi bi-briefcase"></i>
+                                <span>3 years experience</span>
+                            </div>
+                        </div>
+
+                        <div class="match-score">
+                            <span class="match-score-label">Match Score:</span>
+                            <div class="match-score-bar">
+                                <div class="match-score-fill" style="width: 92%;"></div>
+                            </div>
+                            <span class="match-score-value">92%</span>
+                        </div>
+
+                        <div class="application-actions">
+                            <button class="btn-action btn-review">
+                                <i class="bi bi-file-text"></i>
+                                Review Application
+                            </button>
+                            <button class="btn-action btn-reject">
+                                <i class="bi bi-x-circle"></i>
+                                Reject
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Sample Application 2 -->
+                    <div class="application-card">
+                        <div class="applicant-header">
+                            <div class="applicant-info">
+                                <div class="applicant-avatar">CU</div>
+                                <div class="applicant-details">
+                                    <h3>Chioma Udeh</h3>
+                                    <p class="applicant-position">Applied for: Junior Frontend Developer</p>
+                                </div>
+                            </div>
+                            <div class="application-status">
+                                <span class="status-label status-new">New</span>
+                            </div>
+                        </div>
+
+                        <div class="application-meta">
+                            <div class="application-meta-item">
+                                <i class="bi bi-calendar"></i>
+                                <span>Applied 5 hours ago</span>
+                            </div>
+                            <div class="application-meta-item">
+                                <i class="bi bi-geo-alt"></i>
+                                <span>Abuja, Nigeria</span>
+                            </div>
+                            <div class="application-meta-item">
+                                <i class="bi bi-briefcase"></i>
+                                <span>2 years experience</span>
+                            </div>
+                        </div>
+
+                        <div class="match-score">
+                            <span class="match-score-label">Match Score:</span>
+                            <div class="match-score-bar">
+                                <div class="match-score-fill" style="width: 85%;"></div>
+                            </div>
+                            <span class="match-score-value">85%</span>
+                        </div>
+
+                        <div class="application-actions">
+                            <button class="btn-action btn-review">
+                                <i class="bi bi-file-text"></i>
+                                Review Application
+                            </button>
+                            <button class="btn-action btn-reject">
+                                <i class="bi bi-x-circle"></i>
+                                Reject
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Sample Application 3 -->
+                    <div class="application-card">
+                        <div class="applicant-header">
+                            <div class="applicant-info">
+                                <div class="applicant-avatar">EO</div>
+                                <div class="applicant-details">
+                                    <h3>Emmanuel Okonkwo</h3>
+                                    <p class="applicant-position">Applied for: Senior Backend Engineer</p>
+                                </div>
+                            </div>
+                            <div class="application-status">
+                                <span class="status-label status-new">New</span>
+                            </div>
+                        </div>
+
+                        <div class="application-meta">
+                            <div class="application-meta-item">
+                                <i class="bi bi-calendar"></i>
+                                <span>Applied 1 day ago</span>
+                            </div>
+                            <div class="application-meta-item">
+                                <i class="bi bi-geo-alt"></i>
+                                <span>Port Harcourt, Nigeria</span>
+                            </div>
+                            <div class="application-meta-item">
+                                <i class="bi bi-briefcase"></i>
+                                <span>6 years experience</span>
+                            </div>
+                        </div>
+
+                        <div class="match-score">
+                            <span class="match-score-label">Match Score:</span>
+                            <div class="match-score-bar">
+                                <div class="match-score-fill" style="width: 88%;"></div>
+                            </div>
+                            <span class="match-score-value">88%</span>
+                        </div>
+
+                        <div class="application-actions">
+                            <button class="btn-action btn-review">
+                                <i class="bi bi-file-text"></i>
+                                Review Application
+                            </button>
+                            <button class="btn-action btn-reject">
+                                <i class="bi bi-x-circle"></i>
+                                Reject
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -119,8 +290,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="postJobForm" , method="post">
-                        <!-- Job Title -->
+                    <form id="postJobForm">
                         <div class="mb-3">
                             <label for="jobTitle" class="form-label">Job Title <span
                                     class="text-danger">*</span></label>
@@ -128,7 +298,6 @@
                                 placeholder="e.g., Senior Frontend Developer" required>
                         </div>
 
-                        <!-- Location and Job Type Row -->
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="location" class="form-label">Location <span
@@ -148,14 +317,12 @@
                             </div>
                         </div>
 
-                        <!-- Salary Range -->
                         <div class="mb-3">
                             <label for="salaryRange" class="form-label">Salary Range</label>
                             <input name="salary-range" type="text" class="form-control" id="salaryRange"
                                 placeholder="e.g., $80k - $120k">
                         </div>
 
-                        <!-- Description -->
                         <div class="mb-3">
                             <label for="description" class="form-label">Description <span
                                     class="text-danger">*</span></label>
@@ -163,13 +330,6 @@
                                 placeholder="Describe the role and responsibilities..." required></textarea>
                         </div>
 
-                        <!-- Requirements -->
-                        <!-- <div class="mb-3">
-                            <label for="requirements" class="form-label">Requirements <span class="text-danger">*</span></label>
-                            <textarea class="form-control" id="requirements" placeholder="List qualifications and requirements..." required></textarea>
-                        </div> -->
-
-                        <!-- Required Skills -->
                         <div class="mb-3">
                             <label for="skills" class="form-label">Required Skills (comma-separated) <span
                                     class="text-danger">*</span></label>
@@ -188,6 +348,32 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Tab switching functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabLinks = document.querySelectorAll('.nav-tabs .nav-link');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+
+            tabLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    // Remove active class from all tabs and panes
+                    tabLinks.forEach(l => l.classList.remove('active'));
+                    tabPanes.forEach(p => p.classList.remove('active'));
+
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+
+                    // Show corresponding pane with animation
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetPane = document.getElementById(targetId);
+                    if (targetPane) {
+                        targetPane.classList.add('active');
+                    }
+                });
+            });
+        });
+
         // Handle form submission
         document.getElementById('postJobForm').addEventListener('submit', function (e) {
             e.preventDefault();
@@ -209,8 +395,8 @@
                 body: JSON.stringify(formData)
             })
                 .then(response => {
-                    if (!response.ok) {  // Fixed typo: reponse -> response
-                        throw new Error(`HTTP error! status: ${response.status}`);  // Fixed typo
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     return response.json();
                 })
@@ -222,6 +408,9 @@
                         const modal = bootstrap.Modal.getInstance(document.getElementById('postJobModal'));
                         modal.hide();
                         this.reset();
+
+                        // Optionally reload page to show new job
+                        location.reload();
                     } else {
                         alert("Error: " + (result.message || "Failed to post job"));
                     }

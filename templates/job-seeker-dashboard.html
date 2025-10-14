@@ -1,29 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Browse Jobs - JobMatch AI</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
+        rel="stylesheet">
     <link rel="apple-touch-icon" sizes="180x180" href="static/images/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="static/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="static/images/favicon-16x16.png">
     <link rel="manifest" href="static/images/site.webmanifest">
     <link rel="stylesheet" href="../static/css/job-seeker.css">
 </head>
+
 <body>
     <!-- Navbar -->
     <nav class="navbar">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="#">
+            <a class="navbar-brand" href="#">
                 <span class="brand-icon">
                     <i class="bi bi-stars"></i>
                 </span>
                 <span>JobMatch AI</span>
             </a>
             <div class="user-section">
-                <span class="user-name">Lucky Odi</span>
+                <span class="user-name">{{ full_name }}</span>
                 <a href="{{ url_for('logout') }}" class="btn btn-sign-out">Sign Out</a>
             </div>
         </div>
@@ -32,18 +35,27 @@
     <!-- Navigation Tabs -->
     <div class="nav-tabs-container">
         <div class="container">
-            <ul class="nav nav-tabs">
+            <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">AI Recommended Jobs</a>
+                    <a class="nav-link active" id="ai-recommended-tab" data-bs-toggle="tab" href="#ai-recommended"
+                        role="tab">
+                        AI Recommended Jobs
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="#">Browse Jobs</a>
+                    <a class="nav-link" id="browse-tab" data-bs-toggle="tab" href="#browse" role="tab">
+                        Browse Jobs
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">My Applications (0)</a>
+                    <a class="nav-link" id="applications-tab" data-bs-toggle="tab" href="#applications" role="tab">
+                        My Applications (2)
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Profile</a>
+                    <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab">
+                        Profile
+                    </a>
                 </li>
             </ul>
         </div>
@@ -51,75 +63,332 @@
 
     <!-- Main Content -->
     <div class="container">
-        <!-- Search Section -->
-        <div class="search-section">
-            <div class="search-box">
-                <i class="bi bi-search"></i>
-                <input type="text" class="search-input" placeholder="Search jobs by title, company, or skills...">
-            </div>
-            
-            <div class="filter-buttons">
-                <button class="filter-btn active">All Jobs</button>
-                <button class="filter-btn">Full Time</button>
-                <button class="filter-btn">Part Time</button>
-                <button class="filter-btn">Contract</button>
-                <button class="filter-btn">Remote</button>
-            </div>
-        </div>
+        <div class="tab-content-wrapper">
+            <!-- AI Recommended Jobs Tab -->
+            <div class="tab-pane active" id="ai-recommended" role="tabpanel">
+                <div class="ai-header">
+                    <h1><i class="bi bi-stars"></i> AI Recommended Jobs</h1>
+                    <p>Personalized job matches based on your skills and experience</p>
+                </div>
 
-        <!-- Job Listings -->
-        <div class="jobs-section">
-            <!-- Job Card 1 -->
-             {% for job in jobs %}
-            <div class="job-card">
-                <h2 class="job-title">{{ job.title }}</h2>
-                <a href="#" class="company-name">{{ job.company }}</a>
-                
-                <div class="job-meta">
-                    <div class="job-meta-item">
-                        <i class="bi bi-geo-alt"></i>
-                        <span>{{ job.location }}</span>
+                <div class="jobs-section">
+                    <!-- Recommended Job Card 1 -->
+                    <div class="job-card job-card-recommended">
+                        <span class="match-badge"><i class="bi bi-check-circle"></i> 92% Match</span>
+                        <h2 class="job-title">Senior Frontend Developer</h2>
+                        <a href="#" class="company-name">Paycheck Technologies</a>
+
+                        <div class="job-meta">
+                            <div class="job-meta-item">
+                                <i class="bi bi-geo-alt"></i>
+                                <span>Lagos, Nigeria</span>
+                            </div>
+                            <div class="job-meta-item">
+                                <i class="bi bi-briefcase"></i>
+                                <span>Full-time</span>
+                            </div>
+                            <div class="job-meta-item">
+                                <span>$80k - $120k</span>
+                            </div>
+                            <div class="job-meta-item">
+                                <i class="bi bi-clock"></i>
+                                <span>Posted October 12, 2025</span>
+                            </div>
+                        </div>
+
+                        <p class="job-description">We're looking for an experienced frontend developer to lead our UI
+                            development team. You'll work on cutting-edge web applications using React and modern
+                            JavaScript frameworks.</p>
+
+                        <div class="job-tags">
+                            <span class="job-tag">React</span>
+                            <span class="job-tag">TypeScript</span>
+                            <span class="job-tag">Next.js</span>
+                            <span class="job-tag">Tailwind CSS</span>
+                            <span class="job-tag">GraphQL</span>
+                        </div>
+
+                        <button class="btn-apply">Apply Now</button>
+                        <div style="clear: both;"></div>
                     </div>
-                    <div class="job-meta-item">
-                        <i class="bi bi-briefcase"></i>
-                        <span>{{ job.job_type }}</span>
-                    </div>
-                    <div class="job-meta-item">
-                        <!-- <i class="bi bi-currency-dollar"></i> -->
-                        <span>{{ job.salary_range }}</span>
-                    </div>
-                    <div class="job-meta-item">
-                        <i class="bi bi-clock"></i>
-                        <span>{{ job.created_at.strftime("%B %d, %Y") }}</span>
+
+                    <!-- Recommended Job Card 2 -->
+                    <div class="job-card job-card-recommended">
+                        <span class="match-badge"><i class="bi bi-check-circle"></i> 88% Match</span>
+                        <h2 class="job-title">React Developer</h2>
+                        <a href="#" class="company-name">TechCorp Nigeria</a>
+
+                        <div class="job-meta">
+                            <div class="job-meta-item">
+                                <i class="bi bi-geo-alt"></i>
+                                <span>Remote</span>
+                            </div>
+                            <div class="job-meta-item">
+                                <i class="bi bi-briefcase"></i>
+                                <span>Contract</span>
+                            </div>
+                            <div class="job-meta-item">
+                                <span>$60k - $90k</span>
+                            </div>
+                            <div class="job-meta-item">
+                                <i class="bi bi-clock"></i>
+                                <span>Posted October 10, 2025</span>
+                            </div>
+                        </div>
+
+                        <p class="job-description">Join our dynamic team to build innovative fintech solutions. We need
+                            a skilled React developer who can create responsive and performant user interfaces.</p>
+
+                        <div class="job-tags">
+                            <span class="job-tag">React</span>
+                            <span class="job-tag">JavaScript</span>
+                            <span class="job-tag">Redux</span>
+                            <span class="job-tag">REST APIs</span>
+                            <span class="job-tag">Git</span>
+                        </div>
+
+                        <button class="btn-apply">Apply Now</button>
+                        <div style="clear: both;"></div>
                     </div>
                 </div>
-                
-                <p class="job-description">{{ job.description }}</p>
-                
-                <div class="job-tags">
-                    <span class="job-tag">{{ job.skills_required.split(',')[0] }}</span>
-                    <span class="job-tag">{{ job.skills_required.split(',')[1] }}</span>
-                    <span class="job-tag">{{ job.skills_required.split(',')[2] }}</span>
-                    <span class="job-tag">{{ job.skills_required.split(',')[3] }}</span>
-                    <span class="job-tag">{{ job.skills_required.split(',')[4] }}</span>
-                </div>
-                
-                <button class="btn btn-apply">Apply Now</button>
-                <div style="clear: both;"></div>
             </div>
-            {% endfor %}
-        </div>
-    </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Filter button functionality
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-    </script>
+            <!-- Browse Jobs Tab -->
+            <div class="tab-pane" id="browse" role="tabpanel">
+                <div class="search-section">
+                    <div class="search-box">
+                        <i class="bi bi-search"></i>
+                        <input type="text" class="search-input"
+                            placeholder="Search jobs by title, company, or skills...">
+                    </div>
+
+                    <div class="filter-buttons">
+                        <button class="filter-btn active">All Jobs</button>
+                        <button class="filter-btn">Full Time</button>
+                        <button class="filter-btn">Part Time</button>
+                        <button class="filter-btn">Contract</button>
+                        <button class="filter-btn">Remote</button>
+                    </div>
+                </div>
+
+                <div class="jobs-section">
+                    <!-- Job Card -->
+                    {% if jobs %}
+                    {% for job in jobs %}
+                    <div class="job-card">
+                        <h2 class="job-title">{{ job.title }}</h2>
+                        <a href="#" class="company-name">{{ job.company }}</a>
+
+                        <div class="job-meta">
+                            <div class="job-meta-item">
+                                <i class="bi bi-geo-alt"></i>
+                                <span>{{ job.location }}</span>
+                            </div>
+                            <div class="job-meta-item">
+                                <i class="bi bi-briefcase"></i>
+                                <span>{{ job.job_type }}</span>
+                            </div>
+                            <div class="job-meta-item">
+                                <span>{{ job.salary_range }}</span>
+                            </div>
+                            <div class="job-meta-item">
+                                <i class="bi bi-clock"></i>
+                                <span>{{ job.created_at.strftime("%B %d, %Y") }}</span>
+                            </div>
+                        </div>
+
+                        <p class="job-description">Looking for a talented React developer to join our team and build
+                            amazing web applications.</p>
+
+                        <div class="job-tags">
+                            {% for skill in job.skills_required.split(',') %}
+                                <span class="job-tag">{{ skill }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <button class="btn-apply">Apply Now</button>
+                        <div style="clear: both;"></div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div><p>No jobs posted yet</p></div>
+                    {% endif %}
+
+                </div>
+            </div>
+
+            <!-- My Applications Tab -->
+            <div class="tab-pane" id="applications" role="tabpanel">
+                <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 2rem;">My Applications</h1>
+
+                <div class="applications-section">
+                    <!-- Application Card 1 -->
+                    <div class="application-card">
+                        <div class="application-header">
+                            <div>
+                                <h2 class="job-title" style="font-size: 1.5rem;">Senior Frontend Developer</h2>
+                                <a href="#" class="company-name">Paycheck Technologies</a>
+                            </div>
+                            <span class="application-status status-pending">Under Review</span>
+                        </div>
+
+                        <div class="job-meta">
+                            <div class="job-meta-item">
+                                <i class="bi bi-geo-alt"></i>
+                                <span>Lagos, Nigeria</span>
+                            </div>
+                            <div class="job-meta-item">
+                                <i class="bi bi-briefcase"></i>
+                                <span>Full-time</span>
+                            </div>
+                            <div class="job-meta-item">
+                                <span>$80k - $120k</span>
+                            </div>
+                        </div>
+
+                        <div class="application-timeline">
+                            <div class="application-meta-item">
+                                <i class="bi bi-calendar-check"></i>
+                                <span>Applied: October 13, 2025</span>
+                            </div>
+                            <div class="application-meta-item">
+                                <i class="bi bi-eye"></i>
+                                <span>Viewed by employer</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Application Card 2 -->
+                    <div class="application-card">
+                        <div class="application-header">
+                            <div>
+                                <h2 class="job-title" style="font-size: 1.5rem;">React Developer</h2>
+                                <a href="#" class="company-name">TechCorp Nigeria</a>
+                            </div>
+                            <span class="application-status status-reviewed">In Progress</span>
+                        </div>
+
+                        <div class="job-meta">
+                            <div class="job-meta-item">
+                                <i class="bi bi-geo-alt"></i>
+                                <span>Remote</span>
+                            </div>
+                            <div class="job-meta-item">
+                                <i class="bi bi-briefcase"></i>
+                                <span>Contract</span>
+                            </div>
+                            <div class="job-meta-item">
+                                <span>$60k - $90k</span>
+                            </div>
+                        </div>
+
+                        <div class="application-timeline">
+                            <div class="application-meta-item">
+                                <i class="bi bi-calendar-check"></i>
+                                <span>Applied: October 11, 2025</span>
+                            </div>
+                            <div class="application-meta-item">
+                                <i class="bi bi-chat-dots"></i>
+                                <span>Interview scheduled</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Tab -->
+            <div class="tab-pane" id="profile" role="tabpanel">
+                <div class="profile-section">
+                    <div class="profile-header">
+                        <div class="profile-avatar">LO</div>
+                        <div class="profile-info">
+                            <h1>Lucky Odi</h1>
+                            <p>Frontend Developer | React Specialist</p>
+                        </div>
+                    </div>
+
+                    <div class="profile-details">
+                        <h2>About Me</h2>
+                        <p style="color: #495057; line-height: 1.6; margin-bottom: 2rem;">
+                            Passionate frontend developer with 5+ years of experience building modern web applications.
+                            Specialized in React, TypeScript, and creating exceptional user experiences.
+                            Love working on challenging projects that push the boundaries of web development.
+                        </p>
+
+                        <h2>Skills</h2>
+                        <div class="skill-list">
+                            <span class="skill-item">React</span>
+                            <span class="skill-item">TypeScript</span>
+                            <span class="skill-item">JavaScript</span>
+                            <span class="skill-item">Next.js</span>
+                            <span class="skill-item">Node.js</span>
+                            <span class="skill-item">Tailwind CSS</span>
+                            <span class="skill-item">GraphQL</span>
+                            <span class="skill-item">REST APIs</span>
+                            <span class="skill-item">Git</span>
+                            <span class="skill-item">AWS</span>
+                        </div>
+
+                        <h2>Experience</h2>
+                        <div style="margin-bottom: 2rem;">
+                            <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem;">
+                                <h3
+                                    style="font-size: 1.25rem; font-weight: 700; color: #212529; margin-bottom: 0.25rem;">
+                                    Senior Frontend Developer</h3>
+                                <p style="color: #667eea; font-weight: 600; margin-bottom: 0.5rem;">Tech Solutions Ltd •
+                                    2022 - Present</p>
+                                <p style="color: #495057; line-height: 1.6;">
+                                    Leading the frontend development team, architecting scalable React applications,
+                                    and mentoring junior developers. Improved application performance by 40%.
+                                </p>
+                            </div>
+
+                            <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px;">
+                                <h3
+                                    style="font-size: 1.25rem; font-weight: 700; color: #212529; margin-bottom: 0.25rem;">
+                                    Frontend Developer</h3>
+                                <p style="color: #667eea; font-weight: 600; margin-bottom: 0.5rem;">Digital Agency •
+                                    2020 - 2022</p>
+                                <p style="color: #495057; line-height: 1.6;">
+                                    Developed responsive web applications using React and modern JavaScript.
+                                    Collaborated with designers and backend developers to deliver high-quality products.
+                                </p>
+                            </div>
+                        </div>
+
+                        <h2>Education</h2>
+                        <div style="margin-bottom: 2rem;">
+                            <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px;">
+                                <h3
+                                    style="font-size: 1.25rem; font-weight: 700; color: #212529; margin-bottom: 0.25rem;">
+                                    B.Sc. Computer Science</h3>
+                                <p style="color: #667eea; font-weight: 600; margin-bottom: 0.5rem;">University of Lagos
+                                    • 2016 - 2020</p>
+                                <p style="color: #495057; line-height: 1.6;">
+                                    Graduated with First Class Honours. Specialized in Software Engineering and Web
+                                    Technologies.
+                                </p>
+                            </div>
+                        </div>
+
+                        <button class="btn-edit-profile">
+                            <i class="bi bi-pencil"></i> Edit Profile
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+            <script>
+                // Filter button functionality
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+                    });
+                });
+            </script>
 </body>
+
 </html>
