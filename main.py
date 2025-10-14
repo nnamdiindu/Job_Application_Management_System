@@ -7,7 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship
 from datetime import datetime, timezone
 from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin, login_user, login_manager, current_user, LoginManager, login_required, logout_user
+from flask_login import UserMixin, login_user, current_user, LoginManager, login_required, logout_user
 from flask_bootstrap import Bootstrap5
 from forms import CompleteProfile
 
@@ -378,5 +378,22 @@ def job_seeker_dashboard():
     full_name = result.full_name
     return render_template("job-seeker-dashboard.html", jobs=jobs, current_user=current_user, full_name=full_name)
 
+@app.route("/api/apply-job", methods=["POST"])
+@login_required
+def apply_job():
+
+    try:
+        job_id = request.form.get("job_id")
+        print(job_id)
+
+    except Exception as e:
+        print(f"Error applying for job: {e}")
+        db.session.rollback()
+        return jsonify({'status': 'error', 'message': f'Failed to apply for job: {str(e)}'}), 500
+
+    return jsonify({
+        "status": "success",
+        "message": "Successfully applied for job"
+    })
 if __name__ == "__main__":
     app.run(debug=True)
