@@ -36,15 +36,15 @@
     <div class="nav-tabs-container">
         <div class="container">
             <ul class="nav nav-tabs" role="tablist">
+
                 <li class="nav-item">
-                    <a class="nav-link active" id="ai-recommended-tab" data-bs-toggle="tab" href="#ai-recommended"
-                        role="tab">
-                        AI Recommended Jobs
+                    <a class="nav-link active" id="browse-tab" data-bs-toggle="tab" href="#browse" role="tab">
+                        Browse Jobs
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="browse-tab" data-bs-toggle="tab" href="#browse" role="tab">
-                        Browse Jobs
+                    <a class="nav-link" id="ai-recommended-tab" data-bs-toggle="tab" href="#ai-recommended" role="tab">
+                        AI Recommended Jobs
                     </a>
                 </li>
                 <li class="nav-item">
@@ -64,8 +64,93 @@
     <!-- Main Content -->
     <div class="container">
         <div class="tab-content-wrapper">
+
+            <!-- Browse Jobs Tab -->
+            <div class="tab-pane active" id="browse" role="tabpanel">
+                <div class="search-section">
+                    <div class="search-box">
+                        <i class="bi bi-search"></i>
+                        <input type="text" class="search-input"
+                            placeholder="Search jobs by title, company, or skills...">
+                    </div>
+
+                    <div class="filter-buttons">
+                        <button class="filter-btn active">All Jobs</button>
+                        <button class="filter-btn">Full Time</button>
+                        <button class="filter-btn">Part Time</button>
+                        <button class="filter-btn">Contract</button>
+                        <button class="filter-btn">Remote</button>
+                    </div>
+                </div>
+
+
+                <div class="jobs-section">
+                    <!-- Job Card -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show"
+                        role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+
+                    {% if jobs %}
+                    {% for job in jobs %}
+                    <form action="{{ url_for('apply_job') }}" method="post">
+                        <div class="job-card">
+                            <h2 class="job-title">{{ job.title }}</h2>
+                            <a href="#" class="company-name">{{ job.company }}</a>
+
+                            <div class="job-meta">
+                                <div class="job-meta-item">
+                                    <i class="bi bi-geo-alt"></i>
+                                    <span>{{ job.location }}</span>
+                                </div>
+                                <div class="job-meta-item">
+                                    <i class="bi bi-briefcase"></i>
+                                    <span>{{ job.job_type }}</span>
+                                </div>
+                                <div class="job-meta-item">
+                                    <span>{{ job.salary_range }}</span>
+                                </div>
+                                <div class="job-meta-item">
+                                    <i class="bi bi-clock"></i>
+                                    <span>{{ job.created_at.strftime("%B %d, %Y") }}</span>
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="job-id" value="{{ job.id }}">
+
+                            <p class="job-description">{{ job.description }}</p>
+
+                            <div class="job-tags">
+                                {% for skill in job.skills_required.split(',') %}
+                                <span class="job-tag">{{ skill }}</span>
+                                {% endfor %}
+                            </div>
+
+                            <button type="submit" class="btn-apply">Apply Now</button>
+                            <div style="clear: both;"></div>
+                        </div>
+                    </form>
+
+                    {% endfor %}
+                    {% else %}
+                    <div>
+                        <p>No jobs posted yet</p>
+                    </div>
+                    {% endif %}
+
+                </div>
+            </div>
+
+
             <!-- AI Recommended Jobs Tab -->
-            <div class="tab-pane active" id="ai-recommended" role="tabpanel">
+            <div class="tab-pane" id="ai-recommended" role="tabpanel">
                 <div class="ai-header">
                     <h1><i class="bi bi-stars"></i> AI Recommended Jobs</h1>
                     <p>Personalized job matches based on your skills and experience</p>
@@ -153,69 +238,7 @@
                 </div>
             </div>
 
-            <!-- Browse Jobs Tab -->
-            <div class="tab-pane" id="browse" role="tabpanel">
-                <div class="search-section">
-                    <div class="search-box">
-                        <i class="bi bi-search"></i>
-                        <input type="text" class="search-input"
-                            placeholder="Search jobs by title, company, or skills...">
-                    </div>
 
-                    <div class="filter-buttons">
-                        <button class="filter-btn active">All Jobs</button>
-                        <button class="filter-btn">Full Time</button>
-                        <button class="filter-btn">Part Time</button>
-                        <button class="filter-btn">Contract</button>
-                        <button class="filter-btn">Remote</button>
-                    </div>
-                </div>
-
-                <div class="jobs-section">
-                    <!-- Job Card -->
-                    {% if jobs %}
-                    {% for job in jobs %}
-                    <div class="job-card">
-                        <h2 class="job-title">{{ job.title }}</h2>
-                        <a href="#" class="company-name">{{ job.company }}</a>
-
-                        <div class="job-meta">
-                            <div class="job-meta-item">
-                                <i class="bi bi-geo-alt"></i>
-                                <span>{{ job.location }}</span>
-                            </div>
-                            <div class="job-meta-item">
-                                <i class="bi bi-briefcase"></i>
-                                <span>{{ job.job_type }}</span>
-                            </div>
-                            <div class="job-meta-item">
-                                <span>{{ job.salary_range }}</span>
-                            </div>
-                            <div class="job-meta-item">
-                                <i class="bi bi-clock"></i>
-                                <span>{{ job.created_at.strftime("%B %d, %Y") }}</span>
-                            </div>
-                        </div>
-
-                        <p class="job-description">Looking for a talented React developer to join our team and build
-                            amazing web applications.</p>
-
-                        <div class="job-tags">
-                            {% for skill in job.skills_required.split(',') %}
-                                <span class="job-tag">{{ skill }}</span>
-                            {% endfor %}
-                        </div>
-
-                        <button class="btn-apply">Apply Now</button>
-                        <div style="clear: both;"></div>
-                    </div>
-                    {% endfor %}
-                    {% else %}
-                    <div><p>No jobs posted yet</p></div>
-                    {% endif %}
-
-                </div>
-            </div>
 
             <!-- My Applications Tab -->
             <div class="tab-pane" id="applications" role="tabpanel">
