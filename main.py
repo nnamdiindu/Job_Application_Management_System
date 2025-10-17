@@ -1,3 +1,4 @@
+import json
 import os
 from typing import Optional, List
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
@@ -10,6 +11,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, current_user, LoginManager, login_required, logout_user
 from flask_bootstrap import Bootstrap5
 from forms import CompleteProfile
+from openai import OpenAI
+import anthropic
 
 app = Flask(__name__)
 
@@ -377,16 +380,45 @@ def job_seeker_dashboard():
         db.select(Job).order_by(Job.created_at.desc())).scalars().all()
 
     applications = db.session.execute(
-        db.select(Application).where(Application.user_id == current_user.id).order_by(Application.created_at.desc())).scalars().all()
+        db.select(Application).where(Application.user_id == current_user.id).order_by(Application.applied_at)).scalars().all()
 
     result = db.session.execute(db.select(UserProfile).where(UserProfile.id == current_user.id)).scalar()
     full_name = result.full_name
+
+    user = db.session.execute(
+        db.select(UserProfile).where(UserProfile.id == current_user.id)
+    ).scalar_one_or_none()
+
+    # Get recommendations if they exist
+    recommendations_query = db.session.execute(
+        db.select(JobRecommendation)
+        .where(JobRecommendation.user_id == user.id)
+        .order_by(JobRecommendation.match_score.desc())
+    ).scalars().all()
+
+    recommendations_data = []
+    for rec in recommendations_query:
+        match_reasons = json.loads(rec.match_reasons) if rec.match_reasons else {}
+        missing_skills = json.loads(rec.missing_skills) if rec.missing_skills else {}
+
+        recommendations_data.append({
+            'job': rec.job,
+            'match_score': rec.match_score,
+            'skill_match_score': rec.skill_match_score,
+            'location_match_score': rec.location_match_score,
+            'experience_match_score': rec.experience_match_score,
+            'match_reasons': match_reasons,
+            'missing_skills': missing_skills,
+            'recommended_at': rec.recommended_at
+        })
 
     return render_template("job-seeker-dashboard.html",
                            jobs=jobs,
                            current_user=current_user,
                            applications=applications,
-                           full_name=full_name)
+                           full_name=full_name,recommendations=recommendations_data,
+                           has_recommendations=len(recommendations_data) > 0,
+                           user_skills=user.skills)
 
 
 @app.route("/apply-job", methods=["POST"])
@@ -430,6 +462,162 @@ def apply_job():
         flash("Failed to submit application. Please try again.", "error")
         return redirect(url_for("jobs"))
 
+@app.route("/job-recommendation", methods=["GET", "POST"])
+@login_required
+def job_recommendation():
+    # Get the current user
+    user = db.session.execute(
+        db.select(UserProfile).where(UserProfile.id == current_user.id)
+    ).scalar_one_or_none()
+
+    if not user:
+        flash("User not found", "error")
+        return redirect(url_for("job_seeker-dashboard"))
+
+    if request.method == "POST":
+        # Generate new recommendations
+        jobs = db.session.execute(db.select(Job)).scalars().all()
+
+        if not jobs:
+            flash("No jobs available for recommendations", "warning")
+            return render_template("job-seeker-dashboard.html",
+                                   full_name=user.full_name,
+                                   jobs=jobs,
+                                   recommendations=[],
+                                   has_recommendations=False)
+
+        try:
+            # client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+            client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+            # Create detailed job information for the prompt
+            jobs_list = [
+                {
+                    'id': job.id,
+                    'title': job.title,
+                    'company': job.company,
+                    'required_skills': job.skills_required,
+                    'location': job.location,
+                    'salary_range': job.salary_range,
+                    'job_type': job.job_type,
+                    'description': job.description
+                }
+                for job in jobs
+            ]
+
+            prompt = f"""
+            You are a job recommendation assistant. Analyze and match jobs to the user based on multiple criteria.
+
+            User Profile:
+            - Skills: {user.skills}
+            - Location: {getattr(user, 'location', 'Not specified')}
+            - Experience Level: {getattr(user, 'experience_level', 'Not specified')}
+
+            Available Jobs:
+            {json.dumps(jobs_list, indent=2)}
+
+            For each job, calculate match scores (0.0 to 1.0) for:
+            1. skill_match_score - How well user's skills match required skills
+            2. location_match_score - Location compatibility
+            3. experience_match_score - Experience level match
+
+            Then calculate an overall match_score (weighted average).
+
+            Return ONLY valid JSON with this exact structure:
+            {{
+                "recommendations": [
+                    {{
+                        "job_id": 1,
+                        "match_score": 0.85,
+                        "skill_match_score": 0.9,
+                        "location_match_score": 1.0,
+                        "experience_match_score": 0.85,
+                        "match_reasons": {{"skills": "Strong match in Python and JavaScript", "location": "Same city"}},
+                        "missing_skills": {{"required": ["Docker", "AWS"], "recommendation": "Consider learning cloud technologies"}}
+                    }}
+                ]
+            }}
+
+            Recommend the top 5 best matching jobs, ordered by match_score (highest first).
+            """
+
+            response = client.messages.create(
+                model="claude-3-5-sonnet-20241022",
+                max_tokens=4000,
+                messages=[{"role": "user", "content": prompt}]
+            )
+
+            # Extract JSON from response
+            response_text = response.content[0].text
+            recommendations_data = json.loads(response_text)
+
+            # Delete old recommendations for this user
+            db.session.execute(
+                db.delete(JobRecommendation).where(JobRecommendation.user_id == user.id)
+            )
+
+            # Save new recommendations to database
+            for rec in recommendations_data.get('recommendations', []):
+                job_recommendation = JobRecommendation(
+                    user_id=user.id,
+                    job_id=rec['job_id'],
+                    match_score=rec['match_score'],
+                    skill_match_score=rec.get('skill_match_score'),
+                    location_match_score=rec.get('location_match_score'),
+                    salary_match_score=rec.get('salary_match_score'),
+                    experience_match_score=rec.get('experience_match_score'),
+                    match_reasons=json.dumps(rec.get('match_reasons')),
+                    missing_skills=json.dumps(rec.get('missing_skills')),
+                    recommended_at=lambda: datetime.now(timezone.utc)
+                )
+                db.session.add(job_recommendation)
+
+            db.session.commit()
+            flash("Job recommendations generated successfully!", "success")
+
+        except json.JSONDecodeError as e:
+            db.session.rollback()
+            flash(f"Error parsing AI response: {e}", "error")
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Error generating recommendations: {e}", "error")
+
+    # GET request or after POST - Display recommendations
+    recommendations_query = db.session.execute(
+        db.select(JobRecommendation)
+        .where(JobRecommendation.user_id == user.id)
+        .order_by(JobRecommendation.match_score.desc())
+    ).scalars().all()
+
+    # Prepare data for template with job details
+    recommendations_data = []
+    for rec in recommendations_query:
+        # Parse JSON fields
+        match_reasons = json.loads(rec.match_reasons) if rec.match_reasons else {}
+        missing_skills = json.loads(rec.missing_skills) if rec.missing_skills else {}
+
+        recommendations_data.append({
+            'job': rec.job,
+            'match_score': rec.match_score,
+            'skill_match_score': rec.skill_match_score,
+            'location_match_score': rec.location_match_score,
+            'salary_match_score': rec.salary_match_score,
+            'experience_match_score': rec.experience_match_score,
+            'match_reasons': match_reasons,
+            'missing_skills': missing_skills,
+            'recommended_at': rec.recommended_at,
+        })
+
+    # Get all jobs for browse tab
+    all_jobs = db.session.execute(db.select(Job)).scalars().all()
+
+    return render_template(
+        "job-seeker-dashboard.html",
+        full_name=user.full_name,
+        jobs=all_jobs,
+        recommendations=recommendations_data,
+        has_recommendations=len(recommendations_data) > 0,
+        user_skills=user.skills
+    )
 
 
 if __name__ == "__main__":
