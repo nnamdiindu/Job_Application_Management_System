@@ -372,28 +372,65 @@ def post_job():
 @app.route("/job-seeker-dashboard")
 @login_required
 def job_seeker_dashboard():
+
     jobs = db.session.execute(
         db.select(Job).order_by(Job.created_at.desc())).scalars().all()
+
+    applications = db.session.execute(
+        db.select(Application).where(Application.user_id == current_user.id).order_by(Application.created_at.desc())).scalars().all()
+
     result = db.session.execute(db.select(UserProfile).where(UserProfile.id == current_user.id)).scalar()
     full_name = result.full_name
-    return render_template("job-seeker-dashboard.html", jobs=jobs, current_user=current_user, full_name=full_name)
 
-@app.route("/api/apply-job", methods=["POST"])
+    return render_template("job-seeker-dashboard.html",
+                           jobs=jobs,
+                           current_user=current_user,
+                           applications=applications,
+                           full_name=full_name)
+
+
+@app.route("/apply-job", methods=["POST"])
 @login_required
 def apply_job():
-
     try:
-        job_id = request.form.get("job_id")
-        print(job_id)
+        job_id = request.form.get("job-id")
+
+        # Validate job exists
+        job = db.get_or_404(Job, job_id)
+        if not job:
+            flash("Job not found", "error")
+            return redirect(url_for("job_seeker_dashboard"))
+
+        # Check if user already applied
+        existing_application = Application.query.filter_by(
+            user_id=current_user.id,
+            job_id=job_id
+        ).first()
+
+        if existing_application:
+            flash("You have already applied to this job", "warning")
+            return redirect(url_for("job_seeker_dashboard"))
+
+        # Create new application
+        new_application = Application(
+            match_score=90.0,
+            user_id=current_user.id,
+            job_id=job_id
+        )
+
+        db.session.add(new_application)
+        db.session.commit()
+
+        flash("Application submitted successfully", "success")
+        return redirect(url_for("job_seeker_dashboard"))
 
     except Exception as e:
         print(f"Error applying for job: {e}")
         db.session.rollback()
-        return jsonify({'status': 'error', 'message': f'Failed to apply for job: {str(e)}'}), 500
+        flash("Failed to submit application. Please try again.", "error")
+        return redirect(url_for("jobs"))
 
-    return jsonify({
-        "status": "success",
-        "message": "Successfully applied for job"
-    })
+
+
 if __name__ == "__main__":
     app.run(debug=True)
