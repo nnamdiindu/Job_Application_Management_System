@@ -156,85 +156,159 @@
                     <p>Personalized job matches based on your skills and experience</p>
                 </div>
 
+                <!-- Generate/Refresh Button -->
+                <div style="margin-bottom: 2rem;">
+                    <form method="POST" action="{{ url_for('job_recommendation') }}">
+                        {% if has_recommendations %}
+                        <button type="submit" class="btn btn-secondary">
+                            <i class="bi bi-arrow-clockwise"></i> Refresh Recommendations
+                        </button>
+                        {% else %}
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-magic"></i> Generate AI Recommendations
+                        </button>
+                        {% endif %}
+                    </form>
+                </div>
+
                 <div class="jobs-section">
-                    <!-- Recommended Job Card 1 -->
-                    <div class="job-card job-card-recommended">
-                        <span class="match-badge"><i class="bi bi-check-circle"></i> 92% Match</span>
-                        <h2 class="job-title">Senior Frontend Developer</h2>
-                        <a href="#" class="company-name">Paycheck Technologies</a>
+                    {% if has_recommendations %}
+                    {% for rec in recommendations %}
+                    <form action="{{ url_for('apply_job') }}" method="post">
+                        <div class="job-card job-card-recommended">
+                            <span class="match-badge">
+                                <i class="bi bi-check-circle"></i> {{ "%.0f"|format(rec.match_score * 100) }}% Match
+                            </span>
+                            <h2 class="job-title">{{ rec.job.title }}</h2>
+                            <a href="#" class="company-name">{{ rec.job.company }}</a>
 
-                        <div class="job-meta">
-                            <div class="job-meta-item">
-                                <i class="bi bi-geo-alt"></i>
-                                <span>Lagos, Nigeria</span>
+                            <div class="job-meta">
+                                <div class="job-meta-item">
+                                    <i class="bi bi-geo-alt"></i>
+                                    <span>{{ rec.job.location }}</span>
+                                </div>
+                                <div class="job-meta-item">
+                                    <i class="bi bi-briefcase"></i>
+                                    <span>{{ rec.job.job_type }}</span>
+                                </div>
+                                <div class="job-meta-item">
+                                    <span>{{ rec.job.salary_range }}</span>
+                                </div>
+                                <div class="job-meta-item">
+                                    <i class="bi bi-clock"></i>
+                                    <span>Posted {{ rec.job.created_at.strftime("%B %d, %Y") }}</span>
+                                </div>
                             </div>
-                            <div class="job-meta-item">
-                                <i class="bi bi-briefcase"></i>
-                                <span>Full-time</span>
+
+                            <p class="job-description">{{ rec.job.description }}</p>
+
+                            <!-- Match Breakdown -->
+                            {% if rec.skill_match_score or rec.location_match_score %}
+                            <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                                <h6 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">Match
+                                    Breakdown:</h6>
+
+                                {% if rec.skill_match_score %}
+                                <div style="margin-bottom: 0.5rem;">
+                                    <div
+                                        style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 0.25rem;">
+                                        <span>Skills Match</span>
+                                        <span>{{ "%.0f"|format(rec.skill_match_score * 100) }}%</span>
+                                    </div>
+                                    <div
+                                        style="background: #e9ecef; height: 8px; border-radius: 4px; overflow: hidden;">
+                                        <div
+                                            style="background: #667eea; height: 100%; width: {{ rec.skill_match_score * 100 }}%;">
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                {% if rec.location_match_score %}
+                                <div style="margin-bottom: 0.5rem;">
+                                    <div
+                                        style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 0.25rem;">
+                                        <span>Location Match</span>
+                                        <span>{{ "%.0f"|format(rec.location_match_score * 100) }}%</span>
+                                    </div>
+                                    <div
+                                        style="background: #e9ecef; height: 8px; border-radius: 4px; overflow: hidden;">
+                                        <div
+                                            style="background: #28a745; height: 100%; width: {{ rec.location_match_score * 100 }}%;">
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                {% if rec.experience_match_score %}
+                                <div>
+                                    <div
+                                        style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 0.25rem;">
+                                        <span>Experience Match</span>
+                                        <span>{{ "%.0f"|format(rec.experience_match_score * 100) }}%</span>
+                                    </div>
+                                    <div
+                                        style="background: #e9ecef; height: 8px; border-radius: 4px; overflow: hidden;">
+                                        <div
+                                            style="background: #ffc107; height: 100%; width: {{ rec.experience_match_score * 100 }}%;">
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
                             </div>
-                            <div class="job-meta-item">
-                                <span>$80k - $120k</span>
+                            {% endif %}
+
+                            <!-- Match Reasons -->
+                            {% if rec.match_reasons %}
+                            <div
+                                style="background: #e7f3ff; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #667eea;">
+                                <h6 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">
+                                    <i class="bi bi-lightbulb"></i> Why This Match:
+                                </h6>
+                                <ul style="margin: 0; padding-left: 1.5rem; font-size: 0.875rem;">
+                                    {% for key, value in rec.match_reasons.items() %}
+                                    <li><strong>{{ key|title }}:</strong> {{ value }}</li>
+                                    {% endfor %}
+                                </ul>
                             </div>
-                            <div class="job-meta-item">
-                                <i class="bi bi-clock"></i>
-                                <span>Posted October 12, 2025</span>
+                            {% endif %}
+
+                            <!-- Missing Skills -->
+                            {% if rec.missing_skills and rec.missing_skills.required %}
+                            <div
+                                style="background: #fff3cd; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #ffc107;">
+                                <h6 style="font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">
+                                    <i class="bi bi-exclamation-triangle"></i> Skills to Develop:
+                                </h6>
+                                <p style="margin: 0; font-size: 0.875rem;">
+                                    {{ rec.missing_skills.required|join(', ') }}
+                                    {% if rec.missing_skills.recommendation %}
+                                    <br><small style="color: #856404;">{{ rec.missing_skills.recommendation }}</small>
+                                    {% endif %}
+                                </p>
                             </div>
+                            {% endif %}
+
+                            <div class="job-tags">
+                                {% for skill in rec.job.skills_required.split(',') %}
+                                <span class="job-tag">{{ skill.strip() }}</span>
+                                {% endfor %}
+                            </div>
+
+                            <input type="hidden" name="job-id" value="{{ rec.job.id }}">
+                            <button type="submit" class="btn-apply">Apply Now</button>
+                            <div style="clear: both;"></div>
                         </div>
-
-                        <p class="job-description">We're looking for an experienced frontend developer to lead our UI
-                            development team. You'll work on cutting-edge web applications using React and modern
-                            JavaScript frameworks.</p>
-
-                        <div class="job-tags">
-                            <span class="job-tag">React</span>
-                            <span class="job-tag">TypeScript</span>
-                            <span class="job-tag">Next.js</span>
-                            <span class="job-tag">Tailwind CSS</span>
-                            <span class="job-tag">GraphQL</span>
-                        </div>
-
-                        <button class="btn-apply">Apply Now</button>
-                        <div style="clear: both;"></div>
+                    </form>
+                    {% endfor %}
+                    {% else %}
+                    <div style="text-align: center; padding: 3rem; background: #f8f9fa; border-radius: 12px;">
+                        <i class="bi bi-stars" style="font-size: 3rem; color: #667eea; margin-bottom: 1rem;"></i>
+                        <h3 style="color: #212529; margin-bottom: 0.5rem;">No Recommendations Yet</h3>
+                        <p style="color: #6c757d;">Click the button above to generate personalized job recommendations
+                            based on your skills and profile.</p>
                     </div>
-
-                    <!-- Recommended Job Card 2 -->
-                    <div class="job-card job-card-recommended">
-                        <span class="match-badge"><i class="bi bi-check-circle"></i> 88% Match</span>
-                        <h2 class="job-title">React Developer</h2>
-                        <a href="#" class="company-name">TechCorp Nigeria</a>
-
-                        <div class="job-meta">
-                            <div class="job-meta-item">
-                                <i class="bi bi-geo-alt"></i>
-                                <span>Remote</span>
-                            </div>
-                            <div class="job-meta-item">
-                                <i class="bi bi-briefcase"></i>
-                                <span>Contract</span>
-                            </div>
-                            <div class="job-meta-item">
-                                <span>$60k - $90k</span>
-                            </div>
-                            <div class="job-meta-item">
-                                <i class="bi bi-clock"></i>
-                                <span>Posted October 10, 2025</span>
-                            </div>
-                        </div>
-
-                        <p class="job-description">Join our dynamic team to build innovative fintech solutions. We need
-                            a skilled React developer who can create responsive and performant user interfaces.</p>
-
-                        <div class="job-tags">
-                            <span class="job-tag">React</span>
-                            <span class="job-tag">JavaScript</span>
-                            <span class="job-tag">Redux</span>
-                            <span class="job-tag">REST APIs</span>
-                            <span class="job-tag">Git</span>
-                        </div>
-
-                        <button class="btn-apply">Apply Now</button>
-                        <div style="clear: both;"></div>
-                    </div>
+                    {% endif %}
                 </div>
             </div>
 
