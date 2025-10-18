@@ -319,77 +319,43 @@
                 <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 2rem;">My Applications</h1>
 
                 <div class="applications-section">
-                    <!-- Application Card 1 -->
+                    {% for application in applications %}
+                    <!-- Application Card -->
                     <div class="application-card">
                         <div class="application-header">
                             <div>
-                                <h2 class="job-title" style="font-size: 1.5rem;">Senior Frontend Developer</h2>
-                                <a href="#" class="company-name">Paycheck Technologies</a>
+                                <h2 class="job-title" style="font-size: 1.5rem;">{{ application.job.title }}</h2>
+                                <a href="#" class="company-name">{{ application.job.company }}</a>
                             </div>
-                            <span class="application-status status-pending">Under Review</span>
+                            <span class="application-status status-pending">{{ application.status }}</span>
                         </div>
 
                         <div class="job-meta">
                             <div class="job-meta-item">
                                 <i class="bi bi-geo-alt"></i>
-                                <span>Lagos, Nigeria</span>
+                                <span>{{ application.job.location }}</span>
                             </div>
                             <div class="job-meta-item">
                                 <i class="bi bi-briefcase"></i>
-                                <span>Full-time</span>
+                                <span>{{ application.job.job_type }}</span>
                             </div>
                             <div class="job-meta-item">
-                                <span>$80k - $120k</span>
+                                <span>{{ application.job.salary_range }}</span>
                             </div>
                         </div>
 
                         <div class="application-timeline">
                             <div class="application-meta-item">
                                 <i class="bi bi-calendar-check"></i>
-                                <span>Applied: October 13, 2025</span>
+                                <span>Applied: {{ application.job.created_at.strftime("%B %d, %Y") }}</span>
                             </div>
-                            <div class="application-meta-item">
+                            <!-- <div class="application-meta-item">
                                 <i class="bi bi-eye"></i>
                                 <span>Viewed by employer</span>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
-
-                    <!-- Application Card 2 -->
-                    <div class="application-card">
-                        <div class="application-header">
-                            <div>
-                                <h2 class="job-title" style="font-size: 1.5rem;">React Developer</h2>
-                                <a href="#" class="company-name">TechCorp Nigeria</a>
-                            </div>
-                            <span class="application-status status-reviewed">In Progress</span>
-                        </div>
-
-                        <div class="job-meta">
-                            <div class="job-meta-item">
-                                <i class="bi bi-geo-alt"></i>
-                                <span>Remote</span>
-                            </div>
-                            <div class="job-meta-item">
-                                <i class="bi bi-briefcase"></i>
-                                <span>Contract</span>
-                            </div>
-                            <div class="job-meta-item">
-                                <span>$60k - $90k</span>
-                            </div>
-                        </div>
-
-                        <div class="application-timeline">
-                            <div class="application-meta-item">
-                                <i class="bi bi-calendar-check"></i>
-                                <span>Applied: October 11, 2025</span>
-                            </div>
-                            <div class="application-meta-item">
-                                <i class="bi bi-chat-dots"></i>
-                                <span>Interview scheduled</span>
-                            </div>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
 
