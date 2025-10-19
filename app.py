@@ -76,10 +76,15 @@ class UserProfile(UserMixin, db.Model):
     role: Mapped[str] = mapped_column(String(20), default="user", nullable=False)
     bio: Mapped[str] = mapped_column(String(400), nullable=False)
     experience_years: Mapped[int] = mapped_column(Integer, default=0)
-    # resume_url: Mapped[bytes] = mapped_column
     certification: Mapped[str] = mapped_column(String(100), nullable=False)
     salary_range: Mapped[str] = mapped_column(String(100), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
+    grade: Mapped[str] = mapped_column(String(100))
+    area_of_specialization: Mapped[str] = mapped_column(String(100))
+    year_of_graduation: Mapped[str] = mapped_column(String(20))
+    institution: Mapped[str] = mapped_column(String(200))
+    degree: Mapped[str] = mapped_column(String(100))
+    duties_in_last_company: Mapped[str] = mapped_column(String(1000))
 
     user: Mapped["User"] = relationship(back_populates="profile")
 
@@ -119,7 +124,7 @@ class Application(db.Model):
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
     job_id: Mapped[int] = mapped_column(ForeignKey('jobs.id', ondelete='CASCADE'))
     match_score: Mapped[float] = mapped_column(Float)
-
+    status: Mapped[str] = mapped_column(String(50), default='Under Review')
     cover_letter: Mapped[Optional[str]] = mapped_column(Text)
     resume_url: Mapped[Optional[str]] = mapped_column(String(500))
 
@@ -429,7 +434,8 @@ def job_seeker_dashboard():
                            applications=applications,
                            full_name=full_name,recommendations=recommendations_data,
                            has_recommendations=len(recommendations_data) > 0,
-                           user_skills=user.skills)
+                           user_skills=user.skills,
+                           user_profile=user)
 
 
 @app.route("/apply-job", methods=["POST"])
