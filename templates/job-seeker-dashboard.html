@@ -363,9 +363,9 @@
             <div class="tab-pane" id="profile" role="tabpanel">
                 <div class="profile-section">
                     <div class="profile-header">
-                        <div class="profile-avatar">LO</div>
+                        <div class="profile-avatar">{{ full_name.split(" ")[0][0] }}{{ full_name.split(" ")[1][0] }}</div>
                         <div class="profile-info">
-                            <h1>Lucky Odi</h1>
+                            <h1>{{ full_name }}</h1>
                             <p>Frontend Developer | React Specialist</p>
                         </div>
                     </div>
@@ -373,23 +373,14 @@
                     <div class="profile-details">
                         <h2>About Me</h2>
                         <p style="color: #495057; line-height: 1.6; margin-bottom: 2rem;">
-                            Passionate frontend developer with 5+ years of experience building modern web applications.
-                            Specialized in React, TypeScript, and creating exceptional user experiences.
-                            Love working on challenging projects that push the boundaries of web development.
+                            {{ user_profile.bio }}
                         </p>
 
                         <h2>Skills</h2>
                         <div class="skill-list">
-                            <span class="skill-item">React</span>
-                            <span class="skill-item">TypeScript</span>
-                            <span class="skill-item">JavaScript</span>
-                            <span class="skill-item">Next.js</span>
-                            <span class="skill-item">Node.js</span>
-                            <span class="skill-item">Tailwind CSS</span>
-                            <span class="skill-item">GraphQL</span>
-                            <span class="skill-item">REST APIs</span>
-                            <span class="skill-item">Git</span>
-                            <span class="skill-item">AWS</span>
+                            {% for skill in user_profile.skills.split(",") %}
+                            <span class="skill-item">{{ skill }}</span>
+                            {% endfor %}
                         </div>
 
                         <h2>Experience</h2>
@@ -406,7 +397,7 @@
                                 </p>
                             </div>
 
-                            <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px;">
+                            <!-- <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px;">
                                 <h3
                                     style="font-size: 1.25rem; font-weight: 700; color: #212529; margin-bottom: 0.25rem;">
                                     Frontend Developer</h3>
@@ -416,7 +407,7 @@
                                     Developed responsive web applications using React and modern JavaScript.
                                     Collaborated with designers and backend developers to deliver high-quality products.
                                 </p>
-                            </div>
+                            </div> -->
                         </div>
 
                         <h2>Education</h2>
@@ -439,6 +430,7 @@
                         </button>
                     </div>
                 </div>
+                
             </div>
 
 
