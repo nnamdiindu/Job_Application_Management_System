@@ -85,6 +85,9 @@ class UserProfile(UserMixin, db.Model):
     institution: Mapped[str] = mapped_column(String(200))
     degree: Mapped[str] = mapped_column(String(100))
     duties_in_last_company: Mapped[str] = mapped_column(String(1000))
+    position_held: Mapped[str] = mapped_column(String(50), nullable=True)
+    year_start: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    year_end: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
     user: Mapped["User"] = relationship(back_populates="profile")
 
