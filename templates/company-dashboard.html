@@ -44,12 +44,12 @@
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link active" id="jobs-tab" data-bs-toggle="tab" href="#jobs" role="tab">
-                        My Jobs ({{ jobs | length }})
+                        My Jobs ({{ jobs_with_counts | length }})
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="applications-tab" data-bs-toggle="tab" href="#applications" role="tab">
-                        Applications ({{ applications | length }})
+                        Applications ({{ total_applications }})
                     </a>
                 </li>
             </ul>
@@ -71,8 +71,7 @@
 
                 <div class="job-postings-section">
                     <!-- Sample Job Card -->
-                    {% if jobs %}
-                    {% for job in jobs %}
+                    {% for job, app_count in jobs_with_counts %}
                     <div class="job-posting-card">
                         <div class="job-header">
                             <div class="job-title-section">
@@ -88,7 +87,7 @@
                         <div class="job-stats">
                             <div class="job-stats-item">
                                 <i class="bi bi-people"></i>
-                                <span>{{ job.applications }} Applications</span>
+                                <span>{{ app_count }} Applications</span>
                             </div>
                             <div class="job-stats-item">
                                 <i class="bi bi-clock"></i>
@@ -109,12 +108,11 @@
                             View Applications
                         </button>
                     </div>
-                    {% endfor %}
                     {% else %}
                     <div>
-                        <p>No jobs posted yet</p>
+                        <p>You haven't posted any jobs yet.</p>
                     </div>
-                    {% endif %}
+                    {% endfor %}
                 </div>
             </div>
 
@@ -126,14 +124,14 @@
 
                 <div class="applications-section">
                     <!-- Sample Application -->
-                     {% for job_application in job_applications %}
+                     {% for application in recent_applications %}
                     <div class="application-card">
                         <div class="applicant-header">
                             <div class="applicant-info">
-                                <div class="applicant-avatar">{{ job_application.user.profile.full_name.split(" ")[0][0] }}{{ job_application.user.profile.full_name.split(" ")[1][0] }}</div>
+                                <div class="applicant-avatar">{{ application.user.profile.full_name.split(" ")[0][0] }}{{ application.user.profile.full_name.split(" ")[1][0] }}</div>
                                 <div class="applicant-details">
-                                    <h3>{{ job_application.user.profile.full_name }}</h3>
-                                    <p class="applicant-position">Applied for: {{ job_application.job.title }}</p>
+                                    <h3>{{ application.user.profile.full_name }}</h3>
+                                    <p class="applicant-position">Applied for: {{ application.job.title }}</p>
                                 </div>
                             </div>
                             <div class="application-status">
@@ -144,15 +142,15 @@
                         <div class="application-meta">
                             <div class="application-meta-item">
                                 <i class="bi bi-calendar"></i>
-                                <span>Applied {{ job_application.applied_at | timeago }}</span>
+                                <span>Applied {{ application.applied_at | timeago }}</span>
                             </div>
                             <div class="application-meta-item">
                                 <i class="bi bi-geo-alt"></i>
-                                <span>{{ job_application.user.profile.location }}</span>
+                                <span>{{ application.user.profile.location }}</span>
                             </div>
                             <div class="application-meta-item">
                                 <i class="bi bi-briefcase"></i>
-                                <span>{{ job_application.user.profile.experience_years }} years experience</span>
+                                <span>{{ application.user.profile.experience_years }} years experience</span>
                             </div>
                         </div>
 
