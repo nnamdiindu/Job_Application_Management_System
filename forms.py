@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from wtforms.fields.datetime import DateField
 from wtforms.fields.simple import StringField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired
 
@@ -13,7 +14,10 @@ class CompleteUserProfile(FlaskForm):
     full_name = StringField("Full Name", render_kw={"placeholder": "John Doe"}, validators=[DataRequired()])
     location = StringField("Location", render_kw={"placeholder": "Lagos, NG"}, validators=[DataRequired()])
     company_name = StringField("Last Company worked", render_kw={"placeholder": "Microsoft"},validators=[DataRequired()])
+    position_held = StringField("Position Held", render_kw={"placeholder": "Senior Frontend Developer"}, validators=[DataRequired()])
     duties_in_last_company = TextAreaField("Roles and Responsibilities in place last worked")
+    year_start = DateField("Year Started", format="%Y", validators=[DataRequired()])
+    year_end = DateField("Year Ended", format="%m-%Y", validators=[DataRequired()])
     skills = StringField("Skills", render_kw={"placeholder": "React, AWS, Python, Docker, Java"}, validators=[DataRequired()])
     bio = TextAreaField("About Me", validators=[DataRequired()])
     experience_years = StringField("Years of Experience")
@@ -22,5 +26,5 @@ class CompleteUserProfile(FlaskForm):
     year_of_graduation = StringField("Year of Graduation", validators=[DataRequired()])
     area_of_specialization = StringField("Area of Specialization", render_kw={"placeholder": "Software Engineering and Web Technologies"},validators=[DataRequired()])
     grade = StringField("Degree Grade", render_kw={"placeholder": "First Class"},validators=[DataRequired()])
-    salary_range = StringField("Salary Exceptation", render_kw={"placeholder": "₦200k - ₦250k"},validators=[DataRequired()])
+    salary_range = StringField("Salary Expectation", render_kw={"placeholder": "₦200k - ₦250k"},validators=[DataRequired()])
     submit = SubmitField("Submit")
