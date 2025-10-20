@@ -49,7 +49,7 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="applications-tab" data-bs-toggle="tab" href="#applications" role="tab">
-                        My Applications (2)
+                        My Applications ({{ applications | length }})
                     </a>
                 </li>
                 <li class="nav-item">
@@ -366,14 +366,14 @@
                         <div class="profile-avatar">{{ full_name.split(" ")[0][0] }}{{ full_name.split(" ")[1][0] }}</div>
                         <div class="profile-info">
                             <h1>{{ full_name }}</h1>
-                            <p>Frontend Developer | React Specialist</p>
+                            <p>{{ user_profile.bio }}</p>
                         </div>
                     </div>
 
                     <div class="profile-details">
                         <h2>About Me</h2>
                         <p style="color: #495057; line-height: 1.6; margin-bottom: 2rem;">
-                            {{ user_profile.bio }}
+                            {{ user_profile.about_me }}
                         </p>
 
                         <h2>Skills</h2>
@@ -388,12 +388,11 @@
                             <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem;">
                                 <h3
                                     style="font-size: 1.25rem; font-weight: 700; color: #212529; margin-bottom: 0.25rem;">
-                                    Senior Frontend Developer</h3>
-                                <p style="color: #667eea; font-weight: 600; margin-bottom: 0.5rem;">Tech Solutions Ltd •
-                                    2022 - Present</p>
+                                    {{ user_profile.position_held }}</h3>
+                                <p style="color: #667eea; font-weight: 600; margin-bottom: 0.5rem;">{{ user_profile.company_name }} •
+                                    {{ user_profile.year_start }} - {{ user_profile.year_end }}</p>
                                 <p style="color: #495057; line-height: 1.6;">
-                                    Leading the frontend development team, architecting scalable React applications,
-                                    and mentoring junior developers. Improved application performance by 40%.
+                                    {{ user_profile.duties_in_last_company }}
                                 </p>
                             </div>
                         </div>

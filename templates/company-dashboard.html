@@ -49,7 +49,7 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="applications-tab" data-bs-toggle="tab" href="#applications" role="tab">
-                        Applications (3)
+                        Applications ({{ applications | length }})
                     </a>
                 </li>
             </ul>
@@ -70,7 +70,7 @@
                 </div>
 
                 <div class="job-postings-section">
-                    <!-- Sample Job Card 1 -->
+                    <!-- Sample Job Card -->
                     {% if jobs %}
                     {% for job in jobs %}
                     <div class="job-posting-card">
@@ -88,7 +88,7 @@
                         <div class="job-stats">
                             <div class="job-stats-item">
                                 <i class="bi bi-people"></i>
-                                <span>2 Applications</span>
+                                <span>{{ job.applications }} Applications</span>
                             </div>
                             <div class="job-stats-item">
                                 <i class="bi bi-clock"></i>
@@ -99,11 +99,9 @@
                         <p class="job-description">{{ job.description }}</p>
 
                         <div class="job-tags">
-                            <span class="job-tag">{{ job.skills_required.split(',')[0] }}</span>
-                            <span class="job-tag">{{ job.skills_required.split(',')[1] }}</span>
-                            <span class="job-tag">{{ job.skills_required.split(',')[2] }}</span>
-                            <span class="job-tag">{{ job.skills_required.split(',')[3] }}</span>
-                            <span class="job-tag">{{ job.skills_required.split(',')[4] }}</span>
+                            {% for skill in job.skills_required.split(',') %}
+                            <span class="job-tag">{{ skill }}</span>
+                            {% endfor %}
                         </div>
 
                         <button class="btn btn-view-applications">
@@ -127,14 +125,15 @@
                 </div>
 
                 <div class="applications-section">
-                    <!-- Sample Application 1 -->
+                    <!-- Sample Application -->
+                     {% for job_application in job_applications %}
                     <div class="application-card">
                         <div class="applicant-header">
                             <div class="applicant-info">
-                                <div class="applicant-avatar">AO</div>
+                                <div class="applicant-avatar">{{ job_application.user.profile.full_name.split(" ")[0][0] }}{{ job_application.user.profile.full_name.split(" ")[1][0] }}</div>
                                 <div class="applicant-details">
-                                    <h3>Adebayo Oluwaseun</h3>
-                                    <p class="applicant-position">Applied for: Junior Frontend Developer</p>
+                                    <h3>{{ job_application.user.profile.full_name }}</h3>
+                                    <p class="applicant-position">Applied for: {{ job_application.job.title }}</p>
                                 </div>
                             </div>
                             <div class="application-status">
@@ -145,15 +144,15 @@
                         <div class="application-meta">
                             <div class="application-meta-item">
                                 <i class="bi bi-calendar"></i>
-                                <span>Applied 2 hours ago</span>
+                                <span>Applied {{ job_application.applied_at | timeago }}</span>
                             </div>
                             <div class="application-meta-item">
                                 <i class="bi bi-geo-alt"></i>
-                                <span>Lagos, Nigeria</span>
+                                <span>{{ job_application.user.profile.location }}</span>
                             </div>
                             <div class="application-meta-item">
                                 <i class="bi bi-briefcase"></i>
-                                <span>3 years experience</span>
+                                <span>{{ job_application.user.profile.experience_years }} years experience</span>
                             </div>
                         </div>
 
@@ -176,106 +175,7 @@
                             </button>
                         </div>
                     </div>
-
-                    <!-- Sample Application 2 -->
-                    <div class="application-card">
-                        <div class="applicant-header">
-                            <div class="applicant-info">
-                                <div class="applicant-avatar">CU</div>
-                                <div class="applicant-details">
-                                    <h3>Chioma Udeh</h3>
-                                    <p class="applicant-position">Applied for: Junior Frontend Developer</p>
-                                </div>
-                            </div>
-                            <div class="application-status">
-                                <span class="status-label status-new">New</span>
-                            </div>
-                        </div>
-
-                        <div class="application-meta">
-                            <div class="application-meta-item">
-                                <i class="bi bi-calendar"></i>
-                                <span>Applied 5 hours ago</span>
-                            </div>
-                            <div class="application-meta-item">
-                                <i class="bi bi-geo-alt"></i>
-                                <span>Abuja, Nigeria</span>
-                            </div>
-                            <div class="application-meta-item">
-                                <i class="bi bi-briefcase"></i>
-                                <span>2 years experience</span>
-                            </div>
-                        </div>
-
-                        <div class="match-score">
-                            <span class="match-score-label">Match Score:</span>
-                            <div class="match-score-bar">
-                                <div class="match-score-fill" style="width: 85%;"></div>
-                            </div>
-                            <span class="match-score-value">85%</span>
-                        </div>
-
-                        <div class="application-actions">
-                            <button class="btn-action btn-review">
-                                <i class="bi bi-file-text"></i>
-                                Review Application
-                            </button>
-                            <button class="btn-action btn-reject">
-                                <i class="bi bi-x-circle"></i>
-                                Reject
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Sample Application 3 -->
-                    <div class="application-card">
-                        <div class="applicant-header">
-                            <div class="applicant-info">
-                                <div class="applicant-avatar">EO</div>
-                                <div class="applicant-details">
-                                    <h3>Emmanuel Okonkwo</h3>
-                                    <p class="applicant-position">Applied for: Senior Backend Engineer</p>
-                                </div>
-                            </div>
-                            <div class="application-status">
-                                <span class="status-label status-new">New</span>
-                            </div>
-                        </div>
-
-                        <div class="application-meta">
-                            <div class="application-meta-item">
-                                <i class="bi bi-calendar"></i>
-                                <span>Applied 1 day ago</span>
-                            </div>
-                            <div class="application-meta-item">
-                                <i class="bi bi-geo-alt"></i>
-                                <span>Port Harcourt, Nigeria</span>
-                            </div>
-                            <div class="application-meta-item">
-                                <i class="bi bi-briefcase"></i>
-                                <span>6 years experience</span>
-                            </div>
-                        </div>
-
-                        <div class="match-score">
-                            <span class="match-score-label">Match Score:</span>
-                            <div class="match-score-bar">
-                                <div class="match-score-fill" style="width: 88%;"></div>
-                            </div>
-                            <span class="match-score-value">88%</span>
-                        </div>
-
-                        <div class="application-actions">
-                            <button class="btn-action btn-review">
-                                <i class="bi bi-file-text"></i>
-                                Review Application
-                            </button>
-                            <button class="btn-action btn-reject">
-                                <i class="bi bi-x-circle"></i>
-                                Reject
-                            </button>
-                        </div>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -320,7 +220,7 @@
                         <div class="mb-3">
                             <label for="salaryRange" class="form-label">Salary Range</label>
                             <input name="salary-range" type="text" class="form-control" id="salaryRange"
-                                placeholder="e.g., $80k - $120k">
+                                placeholder="e.g., ₦800k - ₦900k">
                         </div>
 
                         <div class="mb-3">
