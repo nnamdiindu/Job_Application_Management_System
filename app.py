@@ -11,7 +11,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, current_user, LoginManager, login_required, logout_user
 from flask_bootstrap import Bootstrap5
 from forms import CompleteCompanyProfile, CompleteUserProfile
-from openai import OpenAI
+# from openai import OpenAI
 import anthropic
 from flask_migrate import Migrate
 
@@ -127,7 +127,7 @@ class Application(db.Model):
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
     job_id: Mapped[int] = mapped_column(ForeignKey('jobs.id', ondelete='CASCADE'))
     match_score: Mapped[float] = mapped_column(Float)
-    status: Mapped[str] = mapped_column(String(50), default='Under Review')
+    status: Mapped[str] = mapped_column(String(50), default='Under Review', server_default='Under Review')
     cover_letter: Mapped[Optional[str]] = mapped_column(Text)
     resume_url: Mapped[Optional[str]] = mapped_column(String(500))
 
