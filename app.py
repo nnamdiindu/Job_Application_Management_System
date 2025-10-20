@@ -1,7 +1,7 @@
 import json
 import os
 from typing import Optional, List
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey, Integer, String, DateTime, select, Text, Boolean, Float
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship
@@ -391,31 +391,75 @@ def logout():
     return redirect(url_for("login"))
 
 
+from sqlalchemy import func
+from sqlalchemy.orm import joinedload
+
+
 @app.route("/company-dashboard")
 @login_required
 def company_dashboard():
-    jobs = db.session.execute(
-        db.select(Job)
+    if current_user.role != "company":
+        abort(403)
+
+    # Get jobs with application counts in one query
+    jobs_query = (
+        select(
+            Job,
+            func.count(Application.id).label('app_count')
+        )
+        .outerjoin(Application, Job.id == Application.job_id)
         .where(Job.employer_id == current_user.id)
+        .group_by(Job.id)
         .order_by(Job.created_at.desc())
+    )
+
+    jobs_with_counts = db.session.execute(jobs_query).all()
+
+    # Get recent applications
+    recent_applications = db.session.execute(
+        select(Application)
+        .join(Job)
+        .options(
+            joinedload(Application.user).joinedload(User.profile),
+            joinedload(Application.job)
+        )
+        .where(Job.employer_id == current_user.id)
+        .order_by(Application.applied_at.desc())
+        .limit(10)  # Only get recent 10
     ).scalars().all()
 
-    applications = db.session.execute(select(Application)).scalars().all()
-
-    job_applications = db.session.execute(
+    # Get all applications for stats
+    all_applications = db.session.execute(
         select(Application)
         .join(Job)
         .where(Job.employer_id == current_user.id)
     ).scalars().all()
 
-    result = db.session.execute(db.select(UserProfile).where(UserProfile.id == current_user.id)).scalar()
-    company_name = result.company_name
+    # Get company profile
+    company_profile = db.session.execute(
+        select(UserProfile).where(UserProfile.user_id == current_user.id)
+    ).scalar()
 
-    return render_template("company-dashboard.html", current_user=current_user,
-                           jobs=jobs,
-                           company_name=company_name,
-                           applications=applications,
-                           job_applications=job_applications)
+    company_name = company_profile.company_name if company_profile else "Company"
+
+    # Statistics
+    total_applications = len(all_applications)
+    under_review = sum(1 for app in all_applications if app.status == 'Under Review')
+    accepted = sum(1 for app in all_applications if app.status == 'Accepted')
+    rejected = sum(1 for app in all_applications if app.status == 'Rejected')
+
+    return render_template(
+        "company-dashboard.html",
+        current_user=current_user,
+        jobs_with_counts=jobs_with_counts,
+        company_name=company_name,
+        recent_applications=recent_applications,
+        total_applications=total_applications,
+        under_review=under_review,
+        accepted=accepted,
+        rejected=rejected
+    )
+
 
 @app.route("/api/post-job", methods=["POST"])
 @login_required
