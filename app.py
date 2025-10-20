@@ -44,7 +44,7 @@ class User(UserMixin, db.Model):
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
     role: Mapped[str] = mapped_column(String(20), default="user", nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
-
+    verified: Mapped[bool] = mapped_column(Boolean, nullable=True, default=False)
     profile: Mapped[Optional["UserProfile"]] = relationship(
         back_populates="user",
         cascade="all, delete-orphan",
@@ -74,20 +74,21 @@ class UserProfile(UserMixin, db.Model):
     company_name: Mapped[str] = mapped_column(String(100))
     skills: Mapped[str] = mapped_column(String(320), nullable=True)
     role: Mapped[str] = mapped_column(String(20), default="user", nullable=False)
-    bio: Mapped[str] = mapped_column(String(400), nullable=False)
+    bio: Mapped[str] = mapped_column(String(100), nullable=False)
+    about_me: Mapped[str] = mapped_column(String(400), nullable=False)
     experience_years: Mapped[int] = mapped_column(Integer, default=0)
-    certification: Mapped[str] = mapped_column(String(100), nullable=False)
-    salary_range: Mapped[str] = mapped_column(String(100), nullable=False)
+    certification: Mapped[str] = mapped_column(String(100), nullable=True)
+    salary_range: Mapped[str] = mapped_column(String(100), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
-    grade: Mapped[str] = mapped_column(String(100))
-    area_of_specialization: Mapped[str] = mapped_column(String(100))
-    year_of_graduation: Mapped[str] = mapped_column(String(20))
-    institution: Mapped[str] = mapped_column(String(200))
-    degree: Mapped[str] = mapped_column(String(100))
-    duties_in_last_company: Mapped[str] = mapped_column(String(1000))
+    grade: Mapped[str] = mapped_column(String(100), nullable=True)
+    area_of_specialization: Mapped[str] = mapped_column(String(100), nullable=True)
+    year_of_graduation: Mapped[str] = mapped_column(String(20), nullable=True)
+    institution: Mapped[str] = mapped_column(String(200), nullable=True)
+    degree: Mapped[str] = mapped_column(String(100), nullable=True)
+    duties_in_last_company: Mapped[str] = mapped_column(String(1000), nullable=True)
     position_held: Mapped[str] = mapped_column(String(50), nullable=True)
-    year_start: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-    year_end: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    year_start: Mapped[str] = mapped_column(String(10), nullable=True)
+    year_end: Mapped[str] = mapped_column(String(10), nullable=True)
 
     user: Mapped["User"] = relationship(back_populates="profile")
 
@@ -190,17 +191,60 @@ def complete_profile_registration(form):
                 company_name=request.form.get("company_name"),
                 skills=request.form.get("skills"),
                 bio=request.form.get("bio"),
+                about_me=request.form.get("about_me"),
                 experience_years=request.form.get("experience_years"),
-                role=user_role
+                role=user_role,
+                position_held=request.form.get("position_held"),
+                duties_in_last_company=request.form.get("duties_in_last_company"),
+                year_start=request.form.get("year_start"),
+                year_end=request.form.get("year_end"),
+                degree=request.form.get("degree"),
+                institution=request.form.get("institution"),
+                grade=request.form.get("grade"),
+                year_of_graduation=request.form.get("year_of_graduation"),
+                area_of_specialization=request.form.get("area_of_specialization"),
+                salary_range=request.form.get("salary_range")
             )
 
             db.session.add(new_profile)
+            db.session.commit()
+
+            new_verified = User(verified=True)
+            db.session.add(new_verified)
             db.session.commit()
 
     except Exception as e:
         print(f"Error submitting form: {e}")
         db.session.rollback()
         return jsonify({'status': 'error', 'message': f'Failed to submit form: {str(e)}'}), 500
+
+def time_ago(timestamp):
+    try:
+        if timestamp.tzinfo is None:
+            timestamp = timestamp.replace(tzinfo=timezone.utc)
+
+        now = datetime.now(timezone.utc)
+        diff = now - timestamp
+
+        seconds = diff.total_seconds()
+        minutes = seconds / 60
+        hours = minutes / 60
+        days = hours / 24
+
+        if seconds < 60:
+            return f"{int(seconds)} seconds ago"
+        elif minutes < 60:
+            return f"{int(minutes)} minutes ago"
+        elif hours < 24:
+            return f"{int(hours)} hours ago"
+        else:
+            return f"{int(days)} days ago"
+    except Exception:
+        return "Invalid date"
+
+# Register the filter
+app.jinja_env.filters['timeago'] = time_ago
+
 
 @app.route("/")
 def index():
@@ -298,14 +342,22 @@ def login():
         if user:
             if user.role == "company":
                 if check_password_hash(user.password, request.form.get("password")):
-                    login_user(user)
-                    return redirect(url_for("company_dashboard"))
+                    if user.verified == True:
+                        login_user(user)
+                        return redirect(url_for("company_dashboard"))
+                    else:
+                        flash("Profile not verfied, please complete profile setup.", "warning")
+                        return redirect(url_for("complete_profile"))
                 else:
                     flash("Incorrect password, please try again", "error")
                     return redirect(url_for("login"))
             else:
-                login_user(user)
-                return redirect(url_for("job_seeker_dashboard"))
+                if user.verified == True:
+                    login_user(user)
+                    return redirect(url_for("job_seeker_dashboard"))
+                else:
+                    flash("Profile not verfied, please complete profile setup.", "warning")
+                    return redirect(url_for("complete_profile"))
 
     return render_template("login.html")
 
@@ -347,10 +399,23 @@ def company_dashboard():
         .where(Job.employer_id == current_user.id)
         .order_by(Job.created_at.desc())
     ).scalars().all()
-    
+
+    applications = db.session.execute(select(Application)).scalars().all()
+
+    job_applications = db.session.execute(
+        select(Application)
+        .join(Job)
+        .where(Job.employer_id == current_user.id)
+    ).scalars().all()
+
     result = db.session.execute(db.select(UserProfile).where(UserProfile.id == current_user.id)).scalar()
     company_name = result.company_name
-    return render_template("company-dashboard.html", current_user=current_user, jobs=jobs, company_name=company_name)
+
+    return render_template("company-dashboard.html", current_user=current_user,
+                           jobs=jobs,
+                           company_name=company_name,
+                           applications=applications,
+                           job_applications=job_applications)
 
 @app.route("/api/post-job", methods=["POST"])
 @login_required
@@ -489,6 +554,10 @@ def job_recommendation():
     user = db.session.execute(
         db.select(UserProfile).where(UserProfile.id == current_user.id)
     ).scalar_one_or_none()
+
+    applications = db.session.execute(
+        db.select(Application).where(Application.user_id == current_user.id).order_by(
+            Application.applied_at)).scalars().all()
 
     if not user:
         flash("User not found", "error")
@@ -634,9 +703,11 @@ def job_recommendation():
         "job-seeker-dashboard.html",
         full_name=user.full_name,
         jobs=all_jobs,
+        applications=applications,
         recommendations=recommendations_data,
         has_recommendations=len(recommendations_data) > 0,
-        user_skills=user.skills
+        user_skills=user.skills,
+        user_profile=user
     )
 
 
