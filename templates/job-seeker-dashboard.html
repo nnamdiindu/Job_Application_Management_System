@@ -396,18 +396,6 @@
                                     and mentoring junior developers. Improved application performance by 40%.
                                 </p>
                             </div>
-
-                            <!-- <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px;">
-                                <h3
-                                    style="font-size: 1.25rem; font-weight: 700; color: #212529; margin-bottom: 0.25rem;">
-                                    Frontend Developer</h3>
-                                <p style="color: #667eea; font-weight: 600; margin-bottom: 0.5rem;">Digital Agency •
-                                    2020 - 2022</p>
-                                <p style="color: #495057; line-height: 1.6;">
-                                    Developed responsive web applications using React and modern JavaScript.
-                                    Collaborated with designers and backend developers to deliver high-quality products.
-                                </p>
-                            </div> -->
                         </div>
 
                         <h2>Education</h2>
@@ -415,12 +403,11 @@
                             <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px;">
                                 <h3
                                     style="font-size: 1.25rem; font-weight: 700; color: #212529; margin-bottom: 0.25rem;">
-                                    B.Sc. Computer Science</h3>
-                                <p style="color: #667eea; font-weight: 600; margin-bottom: 0.5rem;">University of Lagos
-                                    • 2016 - 2020</p>
+                                    {{ user_profile.degree }}</h3>
+                                <p style="color: #667eea; font-weight: 600; margin-bottom: 0.5rem;">{{ user_profile.institution }}
+                                    • {{ user_profile.year_of_graduation }}</p>
                                 <p style="color: #495057; line-height: 1.6;">
-                                    Graduated with First Class Honours. Specialized in Software Engineering and Web
-                                    Technologies.
+                                    Graduated with {{ user_profile.grade }} Honours. Specialized in {{ user_profile.area_of_specialization }}.
                                 </p>
                             </div>
                         </div>
