@@ -9,3 +9,5 @@ WTForms==3.2.1
 anthropic~=0.71.0
 Flask-Bootstrap~=3.3.7.1
 gunicorn==23.0.0
+flask-bootstrap5==0.1.dev1
+Bootstrap-Flask==2.5.0
