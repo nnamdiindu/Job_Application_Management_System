@@ -1,10 +1,11 @@
 import json
 import os
+import re
 from typing import Optional, List
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import ForeignKey, Integer, String, DateTime, select, Text, Boolean, Float
-from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship
+from sqlalchemy import ForeignKey, Integer, String, DateTime, select, Text, Boolean, Float, func
+from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship, joinedload
 from datetime import datetime, timezone
 from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -181,8 +182,8 @@ def complete_profile_registration(form):
     try:
         if form.validate_on_submit():
 
-            result = db.session.execute(select(User).where(User.id == current_user.id)).scalar_one()
-            user_role = result.role
+            user = db.session.execute(select(User).where(User.id == current_user.id)).scalar_one()
+            user_role = user.role
 
             new_profile = UserProfile(
                 full_name=request.form.get("full_name"),
@@ -209,8 +210,7 @@ def complete_profile_registration(form):
             db.session.add(new_profile)
             db.session.commit()
 
-            new_verified = User(verified=True)
-            db.session.add(new_verified)
+            user.verified=True
             db.session.commit()
 
     except Exception as e:
@@ -389,10 +389,6 @@ def registration_success():
 def logout():
     logout_user()
     return redirect(url_for("login"))
-
-
-from sqlalchemy import func
-from sqlalchemy.orm import joinedload
 
 
 @app.route("/company-dashboard")
@@ -638,58 +634,91 @@ def job_recommendation():
             ]
 
             prompt = f"""
-            You are a job recommendation assistant. Analyze and match jobs to the user based on multiple criteria.
+                        Analyze and match jobs to this user.
 
-            User Profile:
-            - Skills: {user.skills}
-            - Location: {getattr(user, 'location', 'Not specified')}
-            - Experience Level: {getattr(user, 'experience_level', 'Not specified')}
+                        User Profile:
+                        - Skills: {user.skills}
+                        - Location: {getattr(user.location, 'location', 'Not specified')}
 
-            Available Jobs:
-            {json.dumps(jobs_list, indent=2)}
+                        Available Jobs:
+                        {json.dumps(jobs_list, indent=2)}
 
-            For each job, calculate match scores (0.0 to 1.0) for:
-            1. skill_match_score - How well user's skills match required skills
-            2. location_match_score - Location compatibility
-            3. experience_match_score - Experience level match
+                        Calculate match scores (0.0 to 1.0) for:
+                        - skill_match_score: How well user's skills match required skills
+                        - location_match_score: Location compatibility
+                        - experience_match_score: Experience level match
+                        - Overall match_score (weighted average)
 
-            Then calculate an overall match_score (weighted average).
+                        CRITICAL: Return ONLY valid JSON, no other text. Use this exact structure:
 
-            Return ONLY valid JSON with this exact structure:
-            {{
-                "recommendations": [
-                    {{
-                        "job_id": 1,
-                        "match_score": 0.85,
-                        "skill_match_score": 0.9,
-                        "location_match_score": 1.0,
-                        "experience_match_score": 0.85,
-                        "match_reasons": {{"skills": "Strong match in Python and JavaScript", "location": "Same city"}},
-                        "missing_skills": {{"required": ["Docker", "AWS"], "recommendation": "Consider learning cloud technologies"}}
-                    }}
-                ]
-            }}
+                        {{
+                            "recommendations": [
+                                {{
+                                    "job_id": 1,
+                                    "match_score": 0.85,
+                                    "skill_match_score": 0.9,
+                                    "location_match_score": 1.0,
+                                    "experience_match_score": 0.85,
+                                    "match_reasons": {{"skills": "Strong Python and JavaScript match", "location": "Same city"}},
+                                    "missing_skills": {{"required": ["Docker", "AWS"], "recommendation": "Consider learning cloud technologies"}}
+                                }}
+                            ]
+                        }}
 
-            Recommend the top 5 best matching jobs, ordered by match_score (highest first).
-            """
+                        Recommend the top 5 best matching jobs, ordered by match_score (highest first).
+                        Return ONLY the JSON, nothing else.
+                        """
 
             response = client.messages.create(
-                model="claude-3-5-sonnet-20241022",
-                max_tokens=4000,
+                model="claude-sonnet-4-20250514",
+                max_tokens=1024,
                 messages=[{"role": "user", "content": prompt}]
             )
 
-            # Extract JSON from response
-            response_text = response.content[0].text
-            recommendations_data = json.loads(response_text)
+            # Extract response text
+            response_text = response.content[0].text.strip()
 
-            # Delete old recommendations for this user
+            print("=" * 50)
+            print("Claude Response:")
+            print(response_text)
+            print("=" * 50)
+
+            # Try to extract JSON from the response
+            # Method 1: Check if it's already pure JSON
+            try:
+                recommendations_data = json.loads(response_text)
+            except json.JSONDecodeError:
+                # Method 2: Extract JSON using regex (find content between { and })
+                json_match = re.search(r'\{[\s\S]*\}', response_text)
+                if json_match:
+                    json_str = json_match.group(0)
+                    recommendations_data = json.loads(json_str)
+                else:
+                    # Method 3: Try to find JSON in code blocks
+                    code_block_match = re.search(r'```(?:json)?\s*(\{[\s\S]*?\})\s*```', response_text)
+                    if code_block_match:
+                        json_str = code_block_match.group(1)
+                        recommendations_data = json.loads(json_str)
+                    else:
+                        raise ValueError("Could not extract valid JSON from response")
+
+            # Validate response structure
+            if 'recommendations' not in recommendations_data:
+                raise ValueError("Response missing 'recommendations' key")
+
+            # Delete old recommendations
             db.session.execute(
                 db.delete(JobRecommendation).where(JobRecommendation.user_id == user.id)
             )
 
-            # Save new recommendations to database
+            # Save new recommendations
+            saved_count = 0
             for rec in recommendations_data.get('recommendations', []):
+                # Validate required fields
+                if 'job_id' not in rec or 'match_score' not in rec:
+                    print(f"Skipping invalid recommendation: {rec}")
+                    continue
+
                 job_recommendation = JobRecommendation(
                     user_id=user.id,
                     job_id=rec['job_id'],
@@ -698,21 +727,32 @@ def job_recommendation():
                     location_match_score=rec.get('location_match_score'),
                     salary_match_score=rec.get('salary_match_score'),
                     experience_match_score=rec.get('experience_match_score'),
-                    match_reasons=json.dumps(rec.get('match_reasons')),
-                    missing_skills=json.dumps(rec.get('missing_skills')),
-                    recommended_at=lambda: datetime.now(timezone.utc)
+                    match_reasons=json.dumps(rec.get('match_reasons', {})),
+                    missing_skills=json.dumps(rec.get('missing_skills', {})),
                 )
                 db.session.add(job_recommendation)
+                saved_count += 1
 
             db.session.commit()
-            flash("Job recommendations generated successfully!", "success")
+
+            if saved_count > 0:
+                flash(f"Generated {saved_count} job recommendations successfully!", "success")
+            else:
+                flash("No valid recommendations were generated. Please try again.", "warning")
 
         except json.JSONDecodeError as e:
             db.session.rollback()
-            flash(f"Error parsing AI response: {e}", "error")
+            print(f"JSON Decode Error: {e}")
+            print(f"Response text was: {response_text[:500]}")  # Print first 500 chars
+            flash(f"Error parsing AI response. Please try again.", "error")
+        except ValueError as e:
+            db.session.rollback()
+            print(f"Value Error: {e}")
+            flash(f"Invalid AI response format. Please try again.", "error")
         except Exception as e:
             db.session.rollback()
-            flash(f"Error generating recommendations: {e}", "error")
+            print(f"Unexpected Error: {e}")
+            flash(f"Error generating recommendations: {str(e)}", "error")
 
     # GET request or after POST - Display recommendations
     recommendations_query = db.session.execute(
@@ -721,10 +761,8 @@ def job_recommendation():
         .order_by(JobRecommendation.match_score.desc())
     ).scalars().all()
 
-    # Prepare data for template with job details
     recommendations_data = []
     for rec in recommendations_query:
-        # Parse JSON fields
         match_reasons = json.loads(rec.match_reasons) if rec.match_reasons else {}
         missing_skills = json.loads(rec.missing_skills) if rec.missing_skills else {}
 
@@ -737,10 +775,9 @@ def job_recommendation():
             'experience_match_score': rec.experience_match_score,
             'match_reasons': match_reasons,
             'missing_skills': missing_skills,
-            'recommended_at': rec.recommended_at,
+            'recommended_at': rec.recommended_at
         })
 
-    # Get all jobs for browse tab
     all_jobs = db.session.execute(db.select(Job)).scalars().all()
 
     return render_template(
