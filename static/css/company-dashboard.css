@@ -1,3 +1,7 @@
+ :root {
+            --primary-blue: #4285f4;
+            --light-blue: #e8f0fe;
+        }
  * {
             margin: 0;
             padding: 0;
@@ -33,7 +37,7 @@
         .brand-icon {
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background:  linear-gradient(135deg, #4285f4, #357ae8);
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -108,8 +112,8 @@
         }
 
         .nav-tabs .nav-link.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
             background: transparent;
         }
 
@@ -133,7 +137,7 @@
         }
 
         .btn-post-job {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background:  linear-gradient(135deg, #4285f4, #357ae8);
             color: white;
             border: none;
             padding: 0.75rem 1.5rem;
@@ -262,8 +266,8 @@
 
         .btn-view-applications {
             background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
             padding: 0.65rem 1.25rem;
             border-radius: 8px;
             font-weight: 600;
@@ -274,7 +278,7 @@
         }
 
         .btn-view-applications:hover {
-            background: #667eea;
+            background: var(--primary-blue);
             color: white;
         }
 
@@ -311,7 +315,7 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background:  linear-gradient(135deg, #4285f4, #357ae8);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -417,7 +421,7 @@
         }
 
         .btn-review {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background:  linear-gradient(135deg, #4285f4, #357ae8);
             color: white;
         }
 
@@ -499,7 +503,7 @@
 
         .form-control:focus,
         .form-select:focus {
-            border-color: #667eea;
+            border-color: var(--primary-blue);
             box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
         }
 
@@ -523,7 +527,7 @@
         }
 
         .btn-post-job-submit {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background:  linear-gradient(135deg, #4285f4, #357ae8);
             color: white;
             border: none;
             padding: 0.75rem 1.5rem;
