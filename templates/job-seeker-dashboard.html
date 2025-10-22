@@ -158,7 +158,7 @@
 
                 <!-- Generate/Refresh Button -->
                 <div style="margin-bottom: 2rem;">
-                    <form method="POST" action="{{ url_for('job_recommendation') }}">
+                    <form method="POST" action="{{ url_for('job_seeker_dashboard') }}">
                         {% if has_recommendations %}
                         <button type="submit" class="btn btn-secondary">
                             <i class="bi bi-arrow-clockwise"></i> Refresh Recommendations
@@ -296,7 +296,7 @@
                             </div>
 
                             <input type="hidden" name="job-id" value="{{ rec.job.id }}">
-                            <button type="submit" class="btn-apply">Apply Now</button>
+                            <a href="{{ url_for('apply_job') }}" class="btn-apply">Apply Now</a>
                             <div style="clear: both;"></div>
                         </div>
                     </form>
