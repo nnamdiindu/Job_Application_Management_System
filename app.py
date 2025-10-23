@@ -358,6 +358,9 @@ def login():
                 else:
                     flash("Profile not verfied, please complete profile setup.", "warning")
                     return redirect(url_for("complete_profile"))
+        else:
+            flash("Email doesn't exist, please register", "error")
+            return redirect(url_for("login"))
 
     return render_template("login.html")
 
@@ -494,56 +497,6 @@ def post_job():
         print(f"Error posting job: {e}")
         db.session.rollback()
         return jsonify({'status': 'error', 'message': f'Failed to post job: {str(e)}'}), 500
-
-
-# @app.route("/job-seeker-dashboard", methods=["GET", "POST"])
-# @login_required
-# def job_seeker_dashboard():
-#
-#     jobs = db.session.execute(
-#         db.select(Job).order_by(Job.created_at.desc())).scalars().all()
-#
-#     applications = db.session.execute(
-#         db.select(Application).where(Application.user_id == current_user.id).order_by(Application.applied_at)).scalars().all()
-#
-#     result = db.session.execute(db.select(UserProfile).where(UserProfile.id == current_user.id)).scalar()
-#     full_name = result.full_name
-#
-#     user = db.session.execute(
-#         db.select(UserProfile).where(UserProfile.user_id == current_user.id)
-#     ).scalar_one_or_none()
-#
-#     # Get recommendations if they exist
-#     recommendations_query = db.session.execute(
-#         db.select(JobRecommendation)
-#         .where(JobRecommendation.user_id == user.id)
-#         .order_by(JobRecommendation.match_score.desc())
-#     ).scalars().all()
-#
-#     recommendations_data = []
-#     for rec in recommendations_query:
-#         match_reasons = json.loads(rec.match_reasons) if rec.match_reasons else {}
-#         missing_skills = json.loads(rec.missing_skills) if rec.missing_skills else {}
-#
-#         recommendations_data.append({
-#             'job': rec.job,
-#             'match_score': rec.match_score,
-#             'skill_match_score': rec.skill_match_score,
-#             'location_match_score': rec.location_match_score,
-#             'experience_match_score': rec.experience_match_score,
-#             'match_reasons': match_reasons,
-#             'missing_skills': missing_skills,
-#             'recommended_at': rec.recommended_at
-#         })
-#
-#     return render_template("job-seeker-dashboard.html",
-#                            jobs=jobs,
-#                            current_user=current_user,
-#                            applications=applications,
-#                            full_name=full_name,recommendations=recommendations_data,
-#                            has_recommendations=len(recommendations_data) > 0,
-#                            user_skills=user.skills,
-#                            user_profile=user)
 
 
 @app.route("/apply-job", methods=["POST"])
