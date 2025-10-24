@@ -342,7 +342,7 @@ def login():
         if user:
             if user.role == "company":
                 if check_password_hash(user.password, request.form.get("password")):
-                    if user.verified == True:
+                    if user.verified:
                         login_user(user)
                         return redirect(url_for("company_dashboard"))
                     else:
@@ -352,7 +352,7 @@ def login():
                     flash("Incorrect password, please try again", "error")
                     return redirect(url_for("login"))
             else:
-                if user.verified == True:
+                if user.verified:
                     login_user(user)
                     return redirect(url_for("job_seeker_dashboard"))
                 else:
