@@ -180,43 +180,41 @@ with app.app_context():
 
 def complete_profile_registration(form):
     try:
-        if form.validate_on_submit():
+        user = db.session.execute(select(User).where(User.id == current_user.id)).scalar_one()
+        user_role = user.role
 
-            user = db.session.execute(select(User).where(User.id == current_user.id)).scalar_one()
-            user_role = user.role
+        new_profile = UserProfile(
+            full_name=request.form.get("full_name"),
+            user_id=current_user.id,
+            location=request.form.get("location"),
+            company_name=request.form.get("company_name"),
+            skills=request.form.get("skills"),
+            bio=request.form.get("bio"),
+            about_me=request.form.get("about_me"),
+            experience_years=request.form.get("experience_years"),
+            role=user_role,
+            position_held=request.form.get("position_held"),
+            duties_in_last_company=request.form.get("duties_in_last_company"),
+            year_start=request.form.get("year_start"),
+            year_end=request.form.get("year_end"),
+            degree=request.form.get("degree"),
+            institution=request.form.get("institution"),
+            grade=request.form.get("grade"),
+            year_of_graduation=request.form.get("year_of_graduation"),
+            area_of_specialization=request.form.get("area_of_specialization"),
+            salary_range=request.form.get("salary_range")
+        )
 
-            new_profile = UserProfile(
-                full_name=request.form.get("full_name"),
-                user_id=current_user.id,
-                location=request.form.get("location"),
-                company_name=request.form.get("company_name"),
-                skills=request.form.get("skills"),
-                bio=request.form.get("bio"),
-                about_me=request.form.get("about_me"),
-                experience_years=request.form.get("experience_years"),
-                role=user_role,
-                position_held=request.form.get("position_held"),
-                duties_in_last_company=request.form.get("duties_in_last_company"),
-                year_start=request.form.get("year_start"),
-                year_end=request.form.get("year_end"),
-                degree=request.form.get("degree"),
-                institution=request.form.get("institution"),
-                grade=request.form.get("grade"),
-                year_of_graduation=request.form.get("year_of_graduation"),
-                area_of_specialization=request.form.get("area_of_specialization"),
-                salary_range=request.form.get("salary_range")
-            )
+        db.session.add(new_profile)
+        user.verified = True
+        db.session.commit()
 
-            db.session.add(new_profile)
-            db.session.commit()
-
-            user.verified=True
-            db.session.commit()
+        return True, "Profile completed successfully!"
 
     except Exception as e:
         print(f"Error submitting form: {e}")
         db.session.rollback()
-        return jsonify({'status': 'error', 'message': f'Failed to submit form: {str(e)}'}), 500
+        return False, f"Failed to submit form: {str(e)}"
 
 def time_ago(timestamp):
     try:
@@ -372,16 +370,23 @@ def complete_profile():
     if current_user.role == "company":
         form = CompleteCompanyProfile()
         if form.validate_on_submit():
-            complete_profile_registration(form)
-            return redirect(url_for("company_dashboard"))
+            success, message = complete_profile_registration(form)
+            if success:
+                flash(message, "success")
+                return redirect(url_for("company_dashboard"))
+            else:
+                flash(message, "error")
     else:
         form = CompleteUserProfile()
         if form.validate_on_submit():
-            complete_profile_registration(form)
-            return redirect(url_for("job_seeker_dashboard"))
+            success, message = complete_profile_registration(form)
+            if success:
+                flash(message, "success")
+                return redirect(url_for("job_seeker_dashboard"))
+            else:
+                flash(message, "error")
 
     return render_template("complete-profile.html", form=form, current_user=current_user)
-
 
 @app.route("/registration-success")
 def registration_success():
