@@ -1,6 +1,6 @@
 # 🗂️ Job Application Management System
 
-A Flask-powered application for tracking job applications, statuses, companies, and interview progress — all in one place.
+A Flask-powered application for job applications, statuses, companies, and AI recommended jobs based on user's skills and job requirements — all in one place.
 
 🔗 **Live Demo:** _(https://job-application-management-system-kmoz.onrender.com/)_
 
